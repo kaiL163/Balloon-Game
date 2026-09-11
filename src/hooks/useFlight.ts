@@ -31,7 +31,7 @@ export function useFlight(scenario: DemoScenario | null) {
   }, [scenario, attempt]);
 
   useEffect(() => {
-    if (!round || round.status === 'crashed' || error) return;
+    if (!round || !['active', 'cashed_out'].includes(round.status) || error) return;
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout>;
     async function tick() {
@@ -57,7 +57,7 @@ export function useFlight(scenario: DemoScenario | null) {
       gameApi.finishRound(round.id).then(() => {
         if (!cancelled) navigate(`/result?round=${encodeURIComponent(round.id)}`, { replace: true });
       }).catch((cause) => { if (!cancelled) setError(cause instanceof Error ? cause.message : 'Не удалось сохранить результат.'); });
-    }, 1800);
+    }, 1400);
     return () => { cancelled = true; clearTimeout(timer); };
   }, [round?.id, round?.status, navigate, error]);
 

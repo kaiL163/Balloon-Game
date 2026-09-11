@@ -1,3 +1,4 @@
+import { BoosterChest } from './BoosterChest';
 import type { Round } from '../../types';
 import { levelMultiplier } from '../../api/flightEngine';
 
@@ -8,7 +9,7 @@ export function LevelTrack({ round }: { round: Round }) {
       style={{ bottom: `${level / round.levels * 65 + 5}%` }}>
       <span className="level-number">{String(level).padStart(2, '0')}</span><span className="level-line" />
       <span className="level-value">{levelMultiplier(level).toFixed(1)}x</span>
-      {round.boosterLevel === level && <span className={`level-booster booster-${round.boosterState.toLowerCase()}`} aria-label={`Booster x${round.booster}, ${round.boosterState}`}>⚡ x{round.booster}</span>}
+      {round.boosterLevel === level && <span className={`level-booster booster-${round.boosterState.toLowerCase()}`} aria-label={round.boosterState === 'ACTIVATED' ? `Сундук открыт: x${round.booster}` : 'Сундук со случайным бустером'}><BoosterChest state={round.boosterState} multiplier={round.booster} /></span>}
     </li>;
   })}</ol>;
 }

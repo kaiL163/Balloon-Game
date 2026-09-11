@@ -41,7 +41,7 @@ test('setTheme persists and drives level counts', async () => {
   assert.equal((await red.startRound('bet-100', 'RED')).levels, 12);
 });
 
-test('cashout disabled before level 1, locks payout, booster missed, flight continues', async () => {
+test('cashout disabled before level 1, locks payout, skips chest, accelerates to crash', async () => {
   const f = fixture(() => 0.9);
   const r = await f.api.startRound('bet-400', 'GREEN');
   await assert.rejects(f.api.cashout(r.id), /первого уровня/);
@@ -53,11 +53,11 @@ test('cashout disabled before level 1, locks payout, booster missed, flight cont
   assert.equal((await f.api.getProfile()).balance, 1240);
   await f.api.cashout(r.id);
   assert.equal((await f.api.getProfile()).balance, 1240);
-  f.advance(10000);
+  f.advance(1000);
   const flying = await f.api.advanceRound(r.id);
   assert.ok(flying.multiplier > cash.multiplier);
   assert.equal(flying.payout, 640);
-  assert.equal(flying.points, 50);
+  assert.ok(flying.points >= 10);
   f.advance(1000000);
   const crash = await f.api.advanceRound(r.id);
   assert.equal(crash.status, 'crashed');
@@ -89,7 +89,7 @@ test('early crash loses stake; late cashout cannot win; reward and history saved
   assert.equal((await f.api.getHistory())[0].id, r.id);
 });
 
-test('win demo automatically cashes out and preserves fixed payout until crash', async () => {
+test('win demo automatically cashes out and reaches crash with fixed payout', async () => {
   const f = fixture();
   const r = await f.api.startDemoRound('win');
   assert.equal((await f.api.startDemoRound('win')).id, r.id);
@@ -132,8 +132,8 @@ test('cashout before demo booster permanently misses it', async () => {
   f.advance(6000);
   const next = await f.api.advanceRound(r.id);
   assert.equal(next.boosterState, 'MISSED');
-  assert.ok(next.multiplier < 3);
-  assert.equal(next.points, 30);
+  assert.equal(next.status, 'crashed');
+  assert.equal(next.points, 90);
   assert.equal(next.payout, 400);
 });
 
@@ -172,4 +172,33 @@ test('storage failure does not debit in-memory balance; returned objects are iso
   const bets = await f.api.getBetOptions();
   bets[0].amount = 0;
   assert.equal((await f.api.getBetOptions())[0].amount, 100);
+});
+
+test('stake amount does not choose chest contents or flight risk', async () => {
+  for (const [random, booster] of [[0, 2], [0.5, 3], [0.999, 4]]) {
+    const small = await fixture(() => random).api.startRound('bet-100', 'GREEN');
+    const large = await fixture(() => random).api.startRound('bet-400', 'GREEN');
+    assert.equal(small.booster, booster);
+    assert.equal(large.booster, booster);
+    assert.equal(small.boosterLevel, large.boosterLevel);
+    assert.equal(small.crashMultiplier, large.crashMultiplier);
+  }
+});
+
+test('cashout reaches crash within two seconds and survives reload without duplicate credits', async () => {
+  const f = fixture(() => 0.9);
+  const r = await f.api.startRound('bet-100', 'GREEN');
+  f.advance(3000);
+  const cash = await f.api.cashout(r.id);
+  const reloaded = new MockGameApi(f.options);
+  await assert.rejects(reloaded.finishRound(r.id), /продолжается/);
+  f.advance(2001);
+  const result = await reloaded.finishRound(r.id);
+  assert.equal(result.payout, cash.payout);
+  assert.ok(result.points >= cash.points);
+  assert.equal(await reloaded.getActiveRound(), null);
+  assert.deepEqual(await reloaded.finishRound(r.id), result);
+  assert.equal((await reloaded.getProfile()).balance, 1060);
+  assert.equal((await reloaded.getProfile()).gamePoints, result.points);
+  assert.equal((await reloaded.getHistory()).filter(item => item.id === r.id).length, 1);
 });

@@ -1,3 +1,4 @@
+@import "./balloon.css";
 .bet-page {
   --accent:#b5ef75;
   --accent-soft:#b5ef7510
@@ -136,78 +137,6 @@
   height:235px;
   filter:drop-shadow(0 20px 26px #0005);
   animation:float 6s ease-in-out infinite
-}
-
-.canopy {
-  position:relative;
-  height:177px;
-  overflow:hidden;
-  border-radius:49% 49% 45% 45% / 43% 43% 59% 59%;
-  background:linear-gradient(105deg,#335b3a,#79aa57 26%,#bae58a 49%,#649449 75%,#254a31);
-  box-shadow:inset 8px 10px 20px #e3ffb522,inset -10px -5px 20px #122b3270
-}
-
-.canopy:before,.canopy:after {
-  content:'';
-  position:absolute;
-  inset:0 33%;
-  border-radius:50%;
-  background:linear-gradient(90deg,#dbedb5,#eff6cf 48%,#b2ca8b);
-  border-left:1px solid #fff3;
-  border-right:1px solid #19371222
-}
-
-.canopy:after {
-  inset:0 12%;
-  background:transparent;
-  border-left:2px solid #1c362b44;
-  border-right:2px solid #1c362b44
-}
-
-.canopy-stripe {
-  position:absolute;
-  bottom:3px;
-  left:65px;
-  width:46px;
-  height:14px;
-  background:#385538;
-  border-radius:3px;
-  z-index:2
-}
-
-.ropes {
-  position:absolute;
-  left:67px;
-  top:169px;
-  width:43px;
-  height:32px;
-  border-left:2px solid #cdbd84;
-  border-right:2px solid #cdbd84;
-  transform:perspective(50px) rotateX(-25deg)
-}
-
-.basket {
-  position:absolute;
-  left:68px;
-  top:199px;
-  width:42px;
-  height:29px;
-  border-radius:3px 3px 11px 11px;
-  border-top:5px solid #debc81;
-  background:repeating-linear-gradient(0deg,#997548 0 3px,#b58c55 3px 6px);
-  box-shadow:inset -10px 0 10px #63412177
-}
-
-.scene-red .canopy {
-  background:linear-gradient(105deg,#803c38,#db7960 26%,#ffb08b 49%,#bd5b4d 75%,#6e3037)
-}
-
-.scene-red .canopy:before {
-  background:linear-gradient(90deg,#f6d3bb,#ffe5c9 48%,#e0ad92)
-}
-
-.scene-red .canopy-stripe {
-  background:#813d36
 }
 
 .star {
@@ -701,4 +630,3 @@ fieldset:disabled {
     font-size:32px
   }
 }
-

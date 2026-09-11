@@ -11,7 +11,7 @@ export interface UserProfile {
   gamePoints: number;
   theme: Theme;
 }
-export interface BetOption { id: string; amount: number; label: string; multiplier: number; }
+export interface BetOption { id: string; amount: number; label: string; }
 export interface Round {
   id: string;
   bet: BetOption;

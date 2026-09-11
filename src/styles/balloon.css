@@ -1,0 +1,122 @@
+/* Shared lightweight, sculpted balloon asset. Lighting comes from upper left. */
+.air-balloon {
+  --shell-light: #b2f18b;
+  --shell-main: #62c66b;
+  --shell-mid: #309b68;
+  --shell-dark: #176153;
+  --shell-neck: #267657;
+}
+
+.scene-red .air-balloon {
+  --shell-light: #ffb49e;
+  --shell-main: #fa746d;
+  --shell-mid: #df485b;
+  --shell-dark: #932f51;
+  --shell-neck: #b03b51;
+}
+
+.air-balloon .canopy {
+  position: relative;
+  overflow: hidden;
+  height: 177px;
+  border-radius: 49% 49% 44% 44% / 43% 43% 59% 59%;
+  background:
+    radial-gradient(ellipse at 29% 20%, #fff9 0, #fff0 37%),
+    radial-gradient(ellipse at 35% 28%, var(--shell-light) 0, var(--shell-main) 38%, var(--shell-mid) 68%, var(--shell-dark) 100%);
+  box-shadow: inset 3px 3px 5px #ffffff65, inset -8px -12px 16px #40234335, inset 0 -3px 3px #243c4633;
+}
+
+.air-balloon .canopy::before {
+  content: '';
+  position: absolute;
+  inset: -1px 31% 0;
+  border-radius: 48% 48% 43% 43% / 42% 42% 60% 60%;
+  border: 0;
+  background: linear-gradient(105deg, #e6be82, #fff2cb 25%, #fff8df 43%, #efdab1 70%, #c3a27a);
+  box-shadow: -3px 0 6px #193a3820, 3px 0 5px #203d3930, inset 2px 0 3px #fff9, inset -2px -8px 8px #75574c20;
+}
+
+.air-balloon .canopy::after {
+  content: '';
+  position: absolute;
+  inset: 0 11%;
+  border-radius: 50%;
+  border-left: 2px solid #ffffff45;
+  border-right: 2px solid #263d432b;
+  background: linear-gradient(103deg, #fff1, #fff0 36%, #233e4414);
+  box-shadow: -2px 0 3px #163f3514, 2px 0 3px #fff2;
+}
+
+.air-balloon .canopy-stripe {
+  position: absolute;
+  z-index: 2;
+  left: 68px;
+  bottom: 0;
+  width: 40px;
+  height: 13px;
+  border-radius: 4px 4px 9px 9px;
+  background: linear-gradient(100deg, var(--shell-main), var(--shell-neck) 75%);
+  box-shadow: inset 0 2px 2px #fff4, inset 0 -3px 3px #25353d35;
+}
+
+.air-balloon .canopy-stripe::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 38px;
+  left: -40px;
+  top: -139px;
+  border-radius: 50%;
+  transform: rotate(31deg);
+  background: linear-gradient(90deg, #fff0, #ffffff80, #fff2);
+  filter: blur(2px);
+}
+
+.air-balloon .ropes {
+  position: absolute;
+  left: 66px;
+  top: 171px;
+  width: 45px;
+  height: 35px;
+  border-left: 3px solid #d8b883;
+  border-right: 3px solid #aa7c50;
+  border-radius: 0 0 5px 5px;
+  transform: perspective(65px) rotateX(-19deg);
+  filter: drop-shadow(1px 1px 0 #69472d55);
+}
+
+.air-balloon .basket {
+  position: absolute;
+  box-sizing: border-box;
+  left: 63px;
+  top: 201px;
+  width: 51px;
+  height: 32px;
+  border: 0;
+  border-radius: 5px 5px 12px 12px;
+  background:
+    linear-gradient(90deg, #fff2, #fff0 35%, #60382345),
+    repeating-linear-gradient(0deg, #bf834a 0 7px, #a86c3d 7px 8px, #e4ab69 8px 9px);
+  box-shadow: inset 3px 0 4px #ffe0a34d, inset -4px -3px 5px #71462855, 0 3px 2px #44342f18;
+}
+
+.air-balloon .basket::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: -4px;
+  width: 55px;
+  height: 9px;
+  border-radius: 5px;
+  background: linear-gradient(#f4ce91, #dea76a 48%, #b77840);
+  box-shadow: inset 0 2px 1px #fff6, 0 2px 3px #78472345;
+}
+
+.air-balloon .basket::after {
+  content: '';
+  position: absolute;
+  inset: 7px 8px 3px;
+  border-left: 3px solid #edbc795c;
+  border-right: 3px solid #7d4b3630;
+  border-radius: 0 0 3px 3px;
+}

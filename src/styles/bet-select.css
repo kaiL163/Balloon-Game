@@ -116,7 +116,7 @@ body:has(.app-bet-select),
 .bet-select-panel {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
   padding: 26px 24px 22px;
   border: 1.5px solid rgba(255, 255, 255, 0.48);
   border-radius: 28px;
@@ -284,118 +284,39 @@ body:has(.app-bet-select),
 .bet-puzzle-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px 16px;
-  padding: 6px 2px;
+  gap: 4px;
 }
 
 .bet-puzzle {
+  --piece-face: #d8eaf0;
+  --piece-edge: #7dabbc;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  min-height: 104px;
-  padding: 22px 18px 18px;
+  min-height: 112px;
+  padding: 24px;
+  color: #345469;
   cursor: pointer;
-  color: #f7fcff;
-  background: rgba(255, 255, 255, 0.22);
-  border: 0;
-  -webkit-backdrop-filter: blur(8px) saturate(1.1);
-  backdrop-filter: blur(8px) saturate(1.1);
-  filter: drop-shadow(0 6px 10px rgba(8, 24, 36, 0.28));
-  transition:
-    transform 0.22s ease,
-    background-color 0.22s ease,
-    filter 0.22s ease;
-  /* Pronounced jigsaw silhouette shared across the stake grid. */
-  clip-path: polygon(
-    0% 20%,
-    22% 20%,
-    22% 8%,
-    32% 0%,
-    42% 8%,
-    42% 20%,
-    100% 20%,
-    100% 45%,
-    90% 45%,
-    82% 36%,
-    74% 45%,
-    90% 54%,
-    100% 54%,
-    100% 80%,
-    78% 80%,
-    78% 92%,
-    68% 100%,
-    58% 92%,
-    58% 80%,
-    0% 80%
-  );
+  isolation: isolate;
+  transition: transform .2s ease, filter .2s ease;
+  filter: drop-shadow(0 6px 5px #17344735);
 }
 
-.bet-puzzle:nth-child(2) {
-  clip-path: polygon(
-    0% 20%,
-    10% 20%,
-    18% 11%,
-    26% 20%,
-    10% 29%,
-    0% 29%,
-    0% 80%,
-    58% 80%,
-    58% 92%,
-    68% 100%,
-    78% 92%,
-    78% 80%,
-    100% 80%,
-    100% 20%,
-    78% 20%,
-    78% 8%,
-    68% 0%,
-    58% 8%,
-    58% 20%
-  );
+.bet-puzzle-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: visible;
 }
 
-.bet-puzzle:nth-child(3) {
-  clip-path: polygon(
-    0% 0%,
-    100% 0%,
-    100% 46%,
-    90% 46%,
-    82% 37%,
-    74% 46%,
-    90% 55%,
-    100% 55%,
-    100% 100%,
-    42% 100%,
-    42% 88%,
-    32% 80%,
-    22% 88%,
-    22% 100%,
-    0% 100%
-  );
-}
+.puzzle-depth { fill: var(--piece-edge); transform: translateY(5px); }
+.puzzle-face { fill: var(--piece-face); stroke: #ffffffa6; stroke-width: 1.5; transition: fill .2s ease; }
+.puzzle-shine { fill: none; stroke: #fff9; stroke-width: 2.5; stroke-linecap: round; }
 
-.bet-puzzle:nth-child(4) {
-  clip-path: polygon(
-    0% 0%,
-    58% 0%,
-    58% 12%,
-    68% 20%,
-    78% 12%,
-    78% 0%,
-    100% 0%,
-    100% 100%,
-    0% 100%,
-    0% 55%,
-    10% 55%,
-    18% 46%,
-    26% 55%,
-    10% 64%,
-    0% 64%
-  );
-}
 
 .bet-puzzle input {
   position: absolute;
@@ -405,81 +326,42 @@ body:has(.app-bet-select),
   margin: 0;
   opacity: 0;
   cursor: pointer;
+  z-index: 2;
 }
 
-.bet-puzzle span {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
-  color: rgba(255, 236, 180, 0.95);
-  text-shadow: 0 1px 2px rgba(20, 40, 50, 0.35);
-}
+.bet-puzzle > span { font-size: 11px; font-weight: 850; color: #537787; }
+.bet-puzzle > strong { font-size: 28px; line-height: 1.1; letter-spacing: -.7px; text-shadow: 0 1px #fff9; }
+.bet-puzzle > small { font-size: 10px; color: #537080; }
+.bet-puzzle:hover:not(:has(input:disabled)) {  filter: drop-shadow(0 10px 6px #17344745) brightness(1.05); }
+.bet-puzzle:has(input:focus-visible) { outline: 3px solid #fff5b0; outline-offset: 2px; border-radius: 15px; }
+.bet-puzzle.selected { --piece-face: #d4f3a7; --piece-edge: #7fba67; color: #315d37;  }
+.theme-red .bet-puzzle.selected { --piece-face: #ffc0a6; --piece-edge: #c87864; color: #7c3d38; }
+.bet-puzzle.selected > span, .bet-puzzle.selected > small { color: inherit; }
+.puzzle-check { position: absolute; right: 24px; top: 31px; font-size: 13px; font-weight: 900; font-style: normal; }
+.bet-puzzle.unavailable { opacity: .45; filter: grayscale(.5); }
+.bet-puzzle:has(input:disabled), .bet-puzzle input:disabled { cursor: not-allowed; }
 
-.bet-puzzle strong {
-  font-size: 26px;
-  line-height: 1.15;
-  letter-spacing: -0.5px;
-  text-shadow: 0 1px 2px rgba(10, 30, 40, 0.35);
+.bet-select-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: -6px 0 -2px;
+  padding: 5px 10px 5px 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #f4fbff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
 }
-
-.bet-puzzle small {
-  font-size: 10px;
-  color: rgba(235, 246, 252, 0.78);
-}
-
-.bet-puzzle:hover:not(.unavailable),
-.bet-puzzle:has(input:focus-visible):not(.unavailable) {
-  transform: translateY(-3px) scale(1.02);
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 211, 90, 0.8);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    0 12px 24px rgba(8, 24, 36, 0.24),
-    0 0 0 1px rgba(255, 255, 255, 0.2);
-}
-
-.bet-puzzle.selected {
-  background: rgba(255, 211, 90, 0.28);
-  border-color: rgba(255, 211, 90, 0.92);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    0 0 0 2px rgba(255, 211, 90, 0.45),
-    0 12px 26px rgba(8, 24, 36, 0.26);
-  filter: saturate(1.08) drop-shadow(0 8px 14px rgba(8, 24, 36, 0.32));
-}
-
-.bet-puzzle.selected span {
-  color: #fff4c8;
-}
-
-.bet-select.theme-green .bet-puzzle.selected {
-  background: rgba(181, 239, 117, 0.28);
-  border-color: rgba(181, 239, 117, 0.9);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    0 0 0 2px rgba(181, 239, 117, 0.4),
-    0 12px 26px rgba(8, 24, 36, 0.26);
-}
-
-.bet-select.theme-red .bet-puzzle.selected {
-  background: rgba(255, 162, 139, 0.28);
-  border-color: rgba(255, 162, 139, 0.9);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    0 0 0 2px rgba(255, 162, 139, 0.4),
-    0 12px 26px rgba(8, 24, 36, 0.26);
-}
-
-.bet-puzzle.unavailable {
-  opacity: 0.42;
-  cursor: not-allowed;
-  filter: grayscale(0.25);
-}
-
-.bet-puzzle input:disabled {
-  cursor: not-allowed;
-}
-
+.bet-select-back > span { font-size: 23px; line-height: 1; transition: transform .2s ease; }
+.bet-select-back:hover:not(:disabled) > span { transform: translateX(-3px); }
+.bet-select-back:focus-visible { outline: 2px solid #fff4b1; outline-offset: 4px; }
+.bet-select-back:disabled { opacity: .45; cursor: not-allowed; }
+.theme-red .bet-select-heading strong { color: #ffa69e; }
+.theme-green .bet-select-heading strong { color: #b6f29d; }
 .bet-select-launch {
   width: 100%;
   min-height: 56px;
@@ -545,7 +427,7 @@ body:has(.app-bet-select),
 
 .bet-select-balloon .theme-balloon-float {
   width: min(100%, 420px);
-  height: min(70dvh, 480px);
+  height: 480px;
   margin: 0;
 }
 
@@ -576,7 +458,7 @@ body:has(.app-bet-select),
 @media (max-width: 900px) {
   .bet-select {
     grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(220px, 34dvh);
+    grid-template-rows: auto auto;
     align-items: stretch;
     padding: 20px clamp(14px, 4vw, 24px);
     gap: 16px;
@@ -614,8 +496,8 @@ body:has(.app-bet-select),
   }
 
   .bet-puzzle {
-    min-height: 82px;
-    padding: 14px 8px 12px;
+    min-height: 112px;
+    padding: 24px;
   }
 
   .bet-puzzle strong {
@@ -626,4 +508,37 @@ body:has(.app-bet-select),
     min-height: 50px;
     font-size: 16px;
   }
+}
+
+
+@media (min-width: 901px) and (max-height: 760px) {
+  .bet-select { overflow-y: auto; align-items: start; }
+  .bet-select-panel { gap: 12px; padding-top: 20px; padding-bottom: 18px; }
+  .bet-select-balloon { min-height: 600px; }
+}
+
+@media (max-width: 900px) {
+  .bet-select-balloon { height: 325px; }
+  .bet-select-balloon .theme-balloon-float { height: 325px; }
+}
+
+/* Keep the paired puzzle edges aligned in every selection state. */
+.bet-puzzle-grid { gap: 24px; padding: 4px 2px 10px; }
+.bet-puzzle { filter: none; }
+.puzzle-depth { transform: translateY(3px); }
+.bet-puzzle:hover:not(:has(input:disabled)) { filter: brightness(1.06); }
+.bet-select-balloon { display: flex; flex-direction: column; justify-content: center; height: auto; }
+.bet-select-balloon .theme-balloon-float { flex-shrink: 0; }
+
+@media (max-width: 900px) {
+  .bet-select-balloon { height: auto; min-height: 345px; }
+  .bet-select-balloon .theme-balloon-float { height: 345px; }
+}
+
+@media (min-width: 901px) and (max-height: 800px) {
+  .bet-select-panel { gap: 9px; padding: 18px 24px; }
+  .bet-select-panel .bet-puzzle { min-height: 94px; padding: 19px; }
+  .bet-select-panel .bet-puzzle-grid { gap: 22px; }
+  .bet-select-panel .bet-chest-note { padding: 6px 10px; }
+  .bet-select-panel .bet-select-heading p { margin-top: 4px; }
 }

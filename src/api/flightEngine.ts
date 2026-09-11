@@ -15,10 +15,11 @@ export function lockCashout(round: Round) {
 /** Ordered events make results independent of frame rate, background tabs and reloads. */
 export function advanceFlight(round: Round, now: number) {
   if (round.status !== 'active' && round.status !== 'cashed_out') return;
-  let remaining = Math.max(0, now - round.lastTickAt) / 1000 * FLIGHT_SPEED;
+  let remaining = Math.max(0, now - round.lastTickAt) / 1000;
   round.lastTickAt = Math.max(now, round.lastTickAt);
   while (remaining > 1e-9) {
     const factor = round.boosterState === 'ACTIVATED' ? round.booster : 1;
+    const speed = round.cashoutMultiplier === null ? FLIGHT_SPEED : Math.max(FLIGHT_SPEED, (round.crashMultiplier - round.cashoutMultiplier) / factor / 2);
     const nextLevel = round.reachedLevel < round.levels ? levelMultiplier(round.reachedLevel + 1) : Infinity;
     const crashAt = round.crashMultiplier / factor;
     const autoCashout = round.cashoutMultiplier === null
@@ -26,12 +27,12 @@ export function advanceFlight(round: Round, now: number) {
       : Infinity;
     const target = Math.min(nextLevel, crashAt, autoCashout);
     const distance = Math.max(0, target - round.baseMultiplier);
-    if (remaining + 1e-9 < distance) {
-      round.baseMultiplier += remaining;
+    if (remaining * speed + 1e-9 < distance) {
+      round.baseMultiplier += remaining * speed;
       round.multiplier = round.baseMultiplier * factor;
       break;
     }
-    remaining = Math.max(0, remaining - distance);
+    remaining = Math.max(0, remaining - distance / speed);
     round.baseMultiplier = target;
     round.multiplier = target * factor;
     // At equal boundaries crash wins over cashout and level rewards.
@@ -55,6 +56,8 @@ export function advanceFlight(round: Round, now: number) {
         }
       }
     }
-    if (autoCashout <= target + 1e-9 && round.cashoutMultiplier === null) lockCashout(round);
+    if (autoCashout <= target + 1e-9 && round.cashoutMultiplier === null) {
+      lockCashout(round);
+    }
   }
 }

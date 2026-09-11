@@ -17,7 +17,7 @@ export const mockHistory: HistoryItem[] = examples.map((entry, index) => {
     id,
     round: {
       id, theme: entry.theme, levels: entry.theme === 'GREEN' ? 9 : 12,
-      bet: { id: `bet-${entry.amount}`, amount: entry.amount, multiplier: entry.booster, label: `${entry.amount} бонусов` },
+      bet: { id: `bet-${entry.amount}`, amount: entry.amount, label: `${entry.amount} бонусов` },
       status: 'finished', startedAt,
       booster: entry.booster, boosterLevel: entry.booster > 1 ? 2 : null,
       boosterState: entry.booster > 1 && entry.cashout !== null ? 'ACTIVATED' : 'MISSED',

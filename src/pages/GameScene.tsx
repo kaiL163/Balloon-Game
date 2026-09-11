@@ -1,3 +1,5 @@
+import { BoosterChest } from '../components/game/BoosterChest';
+import { betPuzzlePaths } from '../components/game/betPuzzlePaths';
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
@@ -90,6 +92,9 @@ export function GameScene() {
     retry();
     loadLobby().catch(() => undefined);
   }, [navigate, retry, loadLobby, theme]);
+  const playAgain = useCallback(() => {
+    navigate('/', { replace: true });
+  }, [navigate]);
   const seconds = useIdleReturn(backToLobby, !!result && isResult);
   const selectedBet = data?.bets.find((bet) => bet.id === selectedId);
   const selectedTheme = data?.themes.find((option) => option.id === theme);
@@ -165,10 +170,15 @@ export function GameScene() {
         </div>
 
         <aside className="bet-select-panel">
+          <button className="bet-select-back" type="button" disabled={starting} onClick={() => navigate('/')} aria-label="Назад к выбору шара">
+            <span aria-hidden="true">←</span> Назад
+          </button>
+
+
           <div className="bet-select-heading">
-            <span>НАСТРОЙКА ПОЛЁТА</span>
-            <strong>Выберите ставку</strong>
-            <p>{themeLabel(theme)} · {selectedTheme?.levels ?? 0} уровней</p>
+            <span>ВЫБРАННЫЙ ШАР</span>
+            <strong>{themeLabel(theme)}</strong>
+            <p>{selectedTheme?.levels ?? 0} уровней · {theme === 'RED' ? 'Длинный маршрут' : 'Короткий маршрут'}</p>
           </div>
 
           <div className="bet-select-balance">
@@ -184,16 +194,21 @@ export function GameScene() {
             <button type="button" onClick={() => setModal('history')} aria-haspopup="dialog"><span aria-hidden="true">↺</span> История</button>
           </div>
 
+<div className="bet-chest-note"><BoosterChest /><div><strong>Сундук с бустером</strong><small>Случайный x2, x3 или x4 на маршруте.<br />Не зависит от суммы ставки.</small></div></div>
           <fieldset disabled={starting}>
-            <legend>Ставка <small>в бонусах</small></legend>
+            <legend>Выберите ставку <small>в бонусах</small></legend>
             <div className="bet-puzzle-grid">
-              {data.bets.map((bet) => {
+              {data.bets.map((bet, index) => {
                 const unavailable = bet.amount > data.profile.balance;
                 return (
                   <label
                     key={bet.id}
                     className={`bet-puzzle ${selectedId === bet.id ? 'selected' : ''} ${unavailable ? 'unavailable' : ''}`}
                   >
+                    <svg className="bet-puzzle-shape" viewBox="0 0 180 120" preserveAspectRatio="none" aria-hidden="true">
+                      <path className="puzzle-depth" d={betPuzzlePaths[index % 4]} />
+                      <path className="puzzle-face" d={betPuzzlePaths[index % 4]} />
+                    </svg>
                     <input
                       type="radio"
                       name="bet"
@@ -201,7 +216,8 @@ export function GameScene() {
                       disabled={unavailable}
                       onChange={() => setSelectedId(bet.id)}
                     />
-                    <span>x{bet.multiplier}</span>
+                    {selectedId === bet.id && <i className="puzzle-check" aria-hidden="true">✓</i>}
+
                     <strong>{bet.amount}</strong>
                     <small>{unavailable ? 'мало бонусов' : 'бонусов'}</small>
                   </label>
@@ -218,9 +234,9 @@ export function GameScene() {
           {error && <p className="bet-select-error" role="alert">{error}</p>}
         </aside>
 
-        <div className="bet-select-balloon" aria-hidden="true">
+        <div className="bet-select-balloon">
           <div
-            className={`theme-balloon-float scene-${theme.toLowerCase()}`}
+            aria-hidden="true" className={`theme-balloon-float scene-${theme.toLowerCase()}`}
             style={{
               '--float-duration': `${sky.motion.duration}s`,
               '--float-rise': `${sky.motion.rise}px`,
@@ -234,6 +250,7 @@ export function GameScene() {
               <div className="basket" />
             </div>
           </div>
+
         </div>
 
         {modal === 'rules' && <RulesModal onClose={() => setModal(null)} />}
@@ -242,7 +259,7 @@ export function GameScene() {
     );
   }
 
-  return <section className={`unified-scene mode-${mode.toLowerCase()} theme-${(round?.theme ?? theme).toLowerCase()} ${starting ? 'is-launching' : ''}`}>
+  return <section className={`unified-scene mode-${mode.toLowerCase()} theme-${(round?.theme ?? theme).toLowerCase()} ${starting ? 'is-launching' : ''} ${round?.status === 'crashed' && !isResult ? 'is-ending' : ''}`}>
     <div className="scene-cloud cloud-a" /><div className="scene-cloud cloud-b" /><div className="scene-cloud cloud-c" />
     <div className="scene-topbar">
       <div className="scene-title"><span>{mode === 'IN_GAME' ? 'ВЫ УЖЕ В НЕБЕ' : 'ПОЛЁТ ЗАВЕРШЁН'}</span><h1>{mode === 'IN_GAME' ? <>Лети выше.<br /><em>Забери вовремя!</em></> : <>Как прошёл<br /><em>ваш полёт?</em></>}</h1></div>
@@ -256,7 +273,7 @@ export function GameScene() {
     <div className="scene-board">
       <div className="world-stage">
         {mode === 'IN_GAME' && round && <div className="active-world"><FlightSky round={round} /></div>}
-        {mode === 'RESULT' && <ResultState result={result} seconds={seconds} onAgain={backToLobby} />}
+        {mode === 'RESULT' && <ResultState result={result} seconds={seconds} onAgain={playAgain} />}
       </div>
 
       {mode === 'IN_GAME' && round && <div className="flight-side"><FlightControls round={round} pending={pending} onCashout={cashout} />{round.scenario && <p className="scenario-banner">Демо · {scenarioLabels[round.scenario]}</p>}{flightError && <div className="game-error">{flightError} <button onClick={retry}>Повторить</button></div>}</div>}
