@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation } from 'react-router';
 export function Layout() {
   const { pathname } = useLocation();
   const isThemeSelect = pathname === '/';
+  /* Bet lobby uses :has(.bet-select) for full-bleed; header stays for in-game/result. */
 
   return (
     <div className={isThemeSelect ? 'app app-theme-select' : 'app'}>
