@@ -93,6 +93,13 @@ export class MockGameApi implements GameApi {
   }
   async getBetOptions() { return structuredClone(this.bets); }
   async getThemes() { return structuredClone(this.themes); }
+  async setTheme(theme: Theme) {
+    if (!this.themes.some((option) => option.id === theme)) throw new Error('Тема не найдена.');
+    const state = this.fresh();
+    state.theme = theme;
+    this.commit(state);
+    return theme;
+  }
   async getActiveRound() { return structuredClone(this.fresh().activeRound); }
 
   private create(state: SavedGame, bet: BetOption, theme: Theme, scenario: DemoScenario | null): Round {

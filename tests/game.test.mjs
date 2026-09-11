@@ -14,6 +14,8 @@ function fixture(random = () => 0.5) {
 
 test('start debits once, preserves theme, rejects duplicate and unknown bets', async () => {
   const f = fixture();
+  await f.api.setTheme('RED');
+  assert.equal((await f.api.getProfile()).theme, 'RED');
   const round = await f.api.startRound('bet-250', 'RED');
   assert.equal(round.levels, 12);
   assert.equal(round.booster, 3);
@@ -25,6 +27,18 @@ test('start debits once, preserves theme, rejects duplicate and unknown bets', a
   const reloaded = new MockGameApi(f.options);
   assert.equal((await reloaded.getActiveRound()).id, round.id);
   assert.equal((await reloaded.getProfile()).theme, 'RED');
+});
+
+test('setTheme persists and drives level counts', async () => {
+  const green = fixture().api;
+  await green.setTheme('GREEN');
+  assert.equal((await green.getProfile()).theme, 'GREEN');
+  assert.equal((await green.startRound('bet-100', 'GREEN')).levels, 9);
+
+  const red = fixture().api;
+  await red.setTheme('RED');
+  assert.equal((await red.getProfile()).theme, 'RED');
+  assert.equal((await red.startRound('bet-100', 'RED')).levels, 12);
 });
 
 test('cashout disabled before level 1, locks payout, booster missed, flight continues', async () => {

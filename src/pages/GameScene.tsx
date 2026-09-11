@@ -19,6 +19,7 @@ import '../styles/scene.css';
 interface LobbyData { profile: UserProfile; bets: BetOption[]; themes: ThemeOption[] }
 const number = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 });
 const scenarioLabels = { win: 'Авто-cashout на 1.60x', crash: 'Ранний crash на 1.30x', booster: 'Бустер x3 на уровне 2' };
+const themeLabel = (theme: Theme) => theme === 'RED' ? 'Красный шар' : 'Зелёный шар';
 
 export function GameScene() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export function GameScene() {
   const [params] = useSearchParams();
   const rawScenario = params.get('scenario');
   const scenario = rawScenario && ['win', 'crash', 'booster'].includes(rawScenario) ? rawScenario as DemoScenario : null;
+  const navTheme = (location.state as { theme?: Theme } | null)?.theme;
   const { round, error: flightError, pending, cashout, retry } = useFlight(scenario);
   const [data, setData] = useState<LobbyData | null>(null);
   const [theme, setTheme] = useState<Theme>('GREEN');
@@ -35,6 +37,7 @@ export function GameScene() {
   const [modal, setModal] = useState<'rules' | 'history' | null>(null);
   const [result, setResult] = useState<GameResult | null>(null);
   const submitting = useRef(false);
+  const themeSeeded = useRef(false);
   const isResult = location.pathname.startsWith('/result');
   const resultRoundId = params.get('round') ?? undefined;
   const mode = isResult ? 'RESULT' : round ? 'IN_GAME' : 'PRE_GAME';
@@ -42,8 +45,11 @@ export function GameScene() {
   const loadLobby = useCallback(async () => {
     const [profile, bets, themes] = await Promise.all([gameApi.getProfile(), gameApi.getBetOptions(), gameApi.getThemes()]);
     setData({ profile, bets, themes });
-    setTheme((current) => data ? current : profile.theme);
-  }, []);
+    if (!themeSeeded.current) {
+      themeSeeded.current = true;
+      setTheme(navTheme === 'RED' || navTheme === 'GREEN' ? navTheme : profile.theme);
+    }
+  }, [navTheme]);
 
   useEffect(() => { loadLobby().catch(() => setError('Не удалось подготовить полёт. Попробуйте ещё раз.')); }, [loadLobby]);
   useEffect(() => {
@@ -52,7 +58,7 @@ export function GameScene() {
   }, [isResult, resultRoundId]);
 
   const backToLobby = useCallback(() => {
-    navigate('/', { replace: true });
+    navigate('/bet', { replace: true });
     setResult(null);
     setSelectedId(null);
     retry();
@@ -62,6 +68,11 @@ export function GameScene() {
   const selectedBet = data?.bets.find((bet) => bet.id === selectedId);
   const selectedTheme = data?.themes.find((option) => option.id === theme);
   const canStart = !!data && !!selectedBet && selectedBet.amount <= data.profile.balance && !starting && !round;
+
+  function pickTheme(next: Theme) {
+    setTheme(next);
+    gameApi.setTheme(next).catch(() => undefined);
+  }
 
   async function start() {
     if (!canStart || !selectedBet || submitting.current) return;
@@ -100,8 +111,8 @@ export function GameScene() {
       </div>
 
       {mode === 'PRE_GAME' && data && <aside className="lobby-panel">
-        <div className="panel-heading"><span>НАСТРОЙКА ПОЛЁТА</span><strong>Выберите маршрут</strong></div>
-        <fieldset disabled={starting}><legend>Цвет шара</legend><div className="theme-pills">{data.themes.map((option) => <label key={option.id} className={`${theme === option.id ? 'selected' : ''} option-${option.id.toLowerCase()}`}><input type="radio" checked={theme === option.id} onChange={() => setTheme(option.id)} /><i /> <strong>{option.id}</strong><small>{option.levels} уровней</small></label>)}</div></fieldset>
+        <div className="panel-heading"><span>НАСТРОЙКА ПОЛЁТА</span><strong>Выберите ставку</strong></div>
+        <fieldset disabled={starting}><legend>Цвет шара</legend><div className="theme-pills">{data.themes.map((option) => <label key={option.id} className={`${theme === option.id ? 'selected' : ''} option-${option.id.toLowerCase()}`}><input type="radio" checked={theme === option.id} onChange={() => pickTheme(option.id)} /><i /> <strong>{themeLabel(option.id)}</strong><small>{option.levels} уровней</small></label>)}</div></fieldset>
         <fieldset disabled={starting}><legend>Ставка <small>в бонусах</small></legend><div className="stake-grid">{data.bets.map((bet) => { const unavailable = bet.amount > data.profile.balance; return <label key={bet.id} className={`${selectedId === bet.id ? 'selected' : ''} ${unavailable ? 'unavailable' : ''}`}><input type="radio" checked={selectedId === bet.id} disabled={unavailable} onChange={() => setSelectedId(bet.id)} /><span>x{bet.multiplier}</span><strong>{bet.amount}</strong><small>{unavailable ? 'мало бонусов' : 'бонусов'}</small></label>; })}</div></fieldset>
         <button className="start-flight" disabled={!canStart} onClick={start}><span>{starting ? 'Взлетаем…' : 'Начать'}</span><i>↑</i></button>
         <p className="start-note">Ставка спишется в момент старта</p>

@@ -14,7 +14,7 @@ export function ResultPage() {
   const [result, setResult] = useState<GameResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const goBack = useCallback(() => navigate('/', { replace: true }), [navigate]);
+  const goBack = useCallback(() => navigate('/bet', { replace: true }), [navigate]);
   const seconds = useIdleReturn(goBack, !!result);
   useEffect(() => {
     let cancelled = false;
@@ -33,7 +33,7 @@ export function ResultPage() {
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [roundId, navigate]);
-  if (loading || !result) return <section className="card"><h1>Итоги полёта</h1><p role="status">{loading ? 'Открываем бортовой журнал…' : error || 'Завершённых полётов пока нет.'}</p><Link className="button" to="/">К выбору ставки</Link></section>;
+  if (loading || !result) return <section className="card"><h1>Итоги полёта</h1><p role="status">{loading ? 'Открываем бортовой журнал…' : error || 'Завершённых полётов пока нет.'}</p><Link className="button" to="/bet">К выбору ставки</Link></section>;
   const won = result.outcome === 'win';
   return <section className={`result-page result-${result.outcome}`}>
     <p className="eyebrow">{result.theme} EXPEDITION · {won ? 'WIN' : 'LOSE'}</p>

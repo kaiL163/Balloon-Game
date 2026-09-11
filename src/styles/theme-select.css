@@ -1,0 +1,363 @@
+/* Full-bleed theme screen: one continuous landscape, edge-to-edge.
+   Backdrop is portaled to document.body so app gradients/header gutters
+   cannot create stripes or side margins. */
+
+html:has(.app-theme-select),
+body:has(.app-theme-select),
+#root:has(.app-theme-select) {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent !important;
+}
+
+#root:has(.app-theme-select) {
+  position: relative;
+  z-index: 1;
+}
+
+.theme-select-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  min-width: 100vw;
+  height: 100%;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: #6eb8e0;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.app.app-theme-select,
+.app:has(.theme-select) {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* Transparent — landscape is the body-level backdrop only. */
+  background: transparent !important;
+}
+
+.app.app-theme-select > main.main-theme-select,
+.app.app-theme-select > main,
+.app:has(.theme-select) > main {
+  position: relative;
+  z-index: 1;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  background: transparent !important;
+}
+
+.app.app-theme-select > footer,
+.app:has(.theme-select) > footer {
+  display: none !important;
+}
+
+.theme-select {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  padding: 28px clamp(20px, 4vw, 40px) 36px;
+  overflow: hidden;
+  color: #19485f;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  background: transparent;
+}
+
+/* Birds/clouds only — landscape is .theme-select-backdrop. */
+.theme-sky {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: none;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.theme-drift-cloud,
+.theme-drift-bird {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform;
+  animation: theme-drift var(--duration, 20s) ease-in-out var(--delay, 0s) infinite alternate;
+  scale: var(--scale, 1);
+}
+
+.theme-drift-cloud {
+  width: 160px;
+  height: 46px;
+  background: #ffffffd0;
+  border-radius: 50%;
+  filter: blur(0.4px);
+  opacity: 0.88;
+}
+
+.theme-drift-cloud::before,
+.theme-drift-cloud::after {
+  content: '';
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.theme-drift-cloud::before {
+  width: 78px;
+  height: 64px;
+  left: 28px;
+  bottom: 0;
+}
+
+.theme-drift-cloud::after {
+  width: 58px;
+  height: 50px;
+  right: 18px;
+  bottom: 0;
+}
+
+.theme-drift-bird {
+  width: 28px;
+  height: 14px;
+  opacity: 0.85;
+}
+
+.theme-drift-bird i {
+  position: absolute;
+  top: 6px;
+  width: 14px;
+  height: 2px;
+  background: #2f5d72;
+  border-radius: 2px;
+  transform-origin: right center;
+  animation: theme-wing 0.55s ease-in-out infinite alternate;
+}
+
+.theme-drift-bird i:last-child {
+  left: 14px;
+  transform-origin: left center;
+  animation-delay: -0.2s;
+}
+
+.theme-drift-bird i:first-child {
+  left: 0;
+}
+
+.theme-select-copy,
+.theme-balloon-row {
+  position: relative;
+  z-index: 1;
+}
+
+.theme-select-copy {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.theme-select-copy .eyebrow {
+  color: #fff;
+  text-shadow: 0 1px 0 #2a7fa3;
+}
+
+.theme-select-copy h1 {
+  margin: 8px 0 10px;
+  color: #fff;
+  text-shadow: 0 3px 0 #d57b2a;
+  letter-spacing: -1.4px;
+}
+
+.theme-select-copy p:last-child {
+  margin: 0 auto;
+  max-width: 420px;
+  color: #245f76;
+  background: #ffffff55;
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+
+.theme-balloon-row {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 360px));
+  gap: 28px;
+  justify-content: center;
+  align-content: center;
+  width: min(100%, 820px);
+  margin: 0 auto;
+}
+
+.theme-balloon-card {
+  appearance: none;
+  border: 3px solid #ffffffcc;
+  border-radius: 28px;
+  background: #ffffffd8;
+  box-shadow: 0 14px 0 #d58a3866, 0 24px 48px #246d8b33;
+  padding: 28px 18px 22px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.theme-balloon-card:hover:not(:disabled),
+.theme-balloon-card:focus-visible {
+  transform: translateY(-4px);
+  border-color: #ffd35a;
+  box-shadow: 0 18px 0 #d58a3866, 0 28px 56px #246d8b40;
+}
+
+.theme-balloon-card:disabled {
+  cursor: progress;
+  opacity: 0.85;
+}
+
+.theme-balloon-card.option-red {
+  background: linear-gradient(180deg, #fff7f2ee, #ffe3d8ee);
+}
+
+.theme-balloon-card.option-green {
+  background: linear-gradient(180deg, #f4ffefee, #dff5d0ee);
+}
+
+.theme-balloon-float {
+  position: relative;
+  width: 200px;
+  height: 250px;
+  margin-bottom: 8px;
+}
+
+.theme-balloon-float .air-balloon {
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  transform: translateX(-50%);
+  animation: theme-balloon-float var(--float-duration, 4.5s) ease-in-out var(--float-delay, 0s) infinite;
+  filter: drop-shadow(0 16px 18px #0003);
+}
+
+.theme-balloon-card strong {
+  font-size: 24px;
+  letter-spacing: -0.4px;
+  color: #214f63;
+}
+
+.theme-balloon-card.option-red strong {
+  color: #8d3d36;
+}
+
+.theme-balloon-card.option-green strong {
+  color: #2f6a3a;
+}
+
+.theme-balloon-card > span {
+  font-size: 14px;
+  color: #5d7d8c;
+}
+
+@keyframes theme-drift {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(var(--dx, 80px), var(--dy, 12px));
+  }
+}
+
+@keyframes theme-wing {
+  from {
+    rotate: -28deg;
+  }
+  to {
+    rotate: 18deg;
+  }
+}
+
+@keyframes theme-balloon-float {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0) rotate(calc(var(--float-tilt, 7deg) * -1));
+  }
+  50% {
+    transform: translateX(-50%) translateY(calc(var(--float-rise, 12px) * -1)) rotate(calc(var(--float-tilt, 7deg) * -0.35));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-drift-cloud,
+  .theme-drift-bird,
+  .theme-balloon-float .air-balloon,
+  .theme-drift-bird i {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .theme-select {
+    padding: 20px clamp(16px, 4vw, 24px) 28px;
+    overflow-y: auto;
+  }
+
+  .theme-balloon-row {
+    grid-template-columns: 1fr;
+    max-width: 380px;
+    gap: 18px;
+  }
+
+  .theme-balloon-float {
+    height: 220px;
+  }
+
+  .theme-balloon-card strong {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 560px) {
+  .theme-select {
+    padding: 16px 14px 24px;
+  }
+
+  .theme-select-copy h1 {
+    font-size: 30px;
+  }
+
+  .theme-balloon-float {
+    width: 170px;
+    height: 200px;
+  }
+
+  .theme-balloon-float .air-balloon {
+    scale: 0.9;
+    transform-origin: 50% 0;
+  }
+}

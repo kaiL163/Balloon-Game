@@ -4,6 +4,7 @@ export interface GameApi {
   getProfile(): Promise<UserProfile>;
   getBetOptions(): Promise<BetOption[]>;
   getThemes(): Promise<ThemeOption[]>;
+  setTheme(theme: Theme): Promise<Theme>;
   getActiveRound(): Promise<Round | null>;
   startRound(betOptionId: string, theme: Theme): Promise<Round>;
   startDemoRound(scenario: DemoScenario): Promise<Round>;

@@ -15,7 +15,7 @@ export function GamePage() {
   const scenario = value && ['win', 'crash', 'booster'].includes(value) ? value as DemoScenario : null;
   const { round, loading, error, pending, cashout, retry } = useFlight(scenario);
   if (loading) return <section className="card"><p role="status">Готовим воздушный шар…</p></section>;
-  if (!round) return <section className="card"><h1>Небо ждёт</h1><p role="status">{error || 'Сначала выберите тему и ставку для нового полёта.'}</p><Link className="button" to="/">Выбрать ставку</Link><DemoLinks /></section>;
+  if (!round) return <section className="card"><h1>Небо ждёт</h1><p role="status">{error || 'Сначала выберите тему и ставку для нового полёта.'}</p><Link className="button" to="/bet">Выбрать ставку</Link><DemoLinks /></section>;
   return <section className={`game-page theme-${round.theme.toLowerCase()}`}>
     <div className="game-heading"><div><p className="eyebrow">Воздушный Шар · в полёте</p><h1>Навстречу высоте.</h1></div><span className="game-route">{round.theme} / {round.levels} уровней</span></div>
     {round.scenario && <p className="scenario-banner">Демо-автопилот · {scenarioLabels[round.scenario]}</p>}
