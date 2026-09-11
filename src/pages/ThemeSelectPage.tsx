@@ -53,9 +53,9 @@ function makeBalloonMotion(): BalloonMotion {
   };
 }
 
-const options: { theme: Theme; title: string; levels: number; hint: string }[] = [
-  { theme: 'RED', title: 'Красный шар', levels: 12, hint: 'Длинный маршрут · 12 уровней' },
-  { theme: 'GREEN', title: 'Зелёный шар', levels: 9, hint: 'Короткий маршрут · 9 уровней' },
+const options: { theme: Theme; title: string; levels: number; route: string }[] = [
+  { theme: 'RED', title: 'Красный шар', levels: 12, route: 'Длинный маршрут' },
+  { theme: 'GREEN', title: 'Зелёный шар', levels: 9, route: 'Короткий маршрут' },
 ];
 
 export function ThemeSelectPage() {
@@ -171,7 +171,10 @@ export function ThemeSelectPage() {
                 </div>
               </div>
               <strong>{option.title}</strong>
-              <span>{option.hint}</span>
+              <span className="theme-balloon-meta">
+                <span>{option.route}</span>
+                <span>{option.levels} уровней</span>
+              </span>
             </button>
           );
         })}
