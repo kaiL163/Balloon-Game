@@ -44,6 +44,21 @@ export function BetPage() {
   const selectedTheme = data?.themes.find((option) => option.id === theme);
   const canStart = !!data && !!selectedBet && selectedBet.amount <= data.profile.balance && !starting && !data.activeRound;
 
+  if (!data) return <section className="card" aria-live="polite"><h1>Готовим полёт</h1><p>{error || 'Собираем бонусы, маршруты и ваш воздушный шар…'}</p>{error && <button className="button" onClick={() => setAttempt((value) => value + 1)}>Повторить</button>}</section>;
+
+  const controls = <div className="flight-controls">
+    <fieldset disabled={starting || !!data.activeRound}><legend><span className="step">01</span> Выберите тему</legend><div className="theme-options">{data.themes.map((option) => <label key={option.id} className={`theme-option option-${option.id.toLowerCase()} ${theme === option.id ? 'selected' : ''}`}><input type="radio" name="theme" value={option.id} checked={theme === option.id} onChange={() => setTheme(option.id)} /><span className="theme-gem" aria-hidden="true">◆</span><strong>{option.id}</strong><span>{option.levels} уровней</span><span className="selection-mark" aria-hidden="true">{theme === option.id ? '✓' : '○'}</span></label>)}</div></fieldset>
+    <fieldset disabled={starting || !!data.activeRound}><legend><span className="step">02</span> Выберите ставку <span className="legend-note">в бонусах</span></legend><div className="bet-options">{data.bets.map((bet) => {
+      const unavailable = bet.amount > data.profile.balance;
+      return <label key={bet.id} className={`bet-option ${selectedId === bet.id ? 'selected' : ''} ${unavailable ? 'unavailable' : ''}`}><input type="radio" name="bet" value={bet.id} checked={selectedId === bet.id} disabled={unavailable} onChange={() => setSelectedId(bet.id)} /><span className="bet-multiplier">x{bet.multiplier}</span><strong>{bet.amount}</strong><span className="bet-note">{unavailable ? 'Мало бонусов' : 'бонусов'}</span></label>;
+    })}</div></fieldset>
+    <div className="launch-area"><div className="launch-summary"><span>{selectedBet ? 'Ваша ставка' : 'Всё готово к приключению'}</span><strong>{selectedBet ? `${selectedBet.amount} бонусов · x${selectedBet.multiplier}` : 'Выберите ставку'}</strong></div>
+      {data.activeRound ? <button className="button launch-button" onClick={() => navigate('/game')}>Продолжить полёт <span aria-hidden="true">↗</span></button> : <button className="button launch-button" disabled={!canStart} onClick={start}>{starting ? 'Взлетаем…' : 'Начать'}<span aria-hidden="true">↗</span></button>}
+      <p className="launch-hint">{data.activeRound ? 'У вас уже есть незавершённый раунд' : 'Бонусы спишутся при старте полёта'}</p>
+      {error && <p className="error" role="alert">{error}</p>}
+    </div>
+  </div>;
+
   async function start() {
     if (!canStart || !selectedBet || submitting.current) return;
     submitting.current = true;
@@ -64,8 +79,6 @@ export function BetPage() {
     }
   }
 
-  if (!data) return <section className="card" aria-live="polite"><h1>Готовим полёт</h1><p>{error || 'Собираем бонусы, маршруты и ваш воздушный шар…'}</p>{error && <button className="button" onClick={() => setAttempt((value) => value + 1)}>Повторить</button>}</section>;
-
   return (
     <section className={`bet-page theme-${theme.toLowerCase()}`}>
       <div className="bet-heading"><div><p className="eyebrow">Небо ближе, чем кажется</p><h1>Выше — только <span>облака.</span></h1><p>Выберите свой маршрут. И пусть приключение начнётся.</p></div>
@@ -77,18 +90,7 @@ export function BetPage() {
       </div>
       <div className="flight-panel">
         <div className="flight-preview"><div className="preview-label"><span>ВОЗДУШНЫЙ ШАР</span><span>01 / ПОДГОТОВКА</span></div><BalloonScene theme={theme} levels={selectedTheme?.levels ?? 0} /><div className="preview-copy"><span className="eyebrow">Время взлетать</span><h2>Большой полёт<br />начинается с выбора.</h2><p>Ваш шар. Ваш маршрут. Ваша высота.</p></div></div>
-        <div className="flight-controls">
-          <fieldset disabled={starting || !!data.activeRound}><legend><span className="step">01</span> Выберите тему</legend><div className="theme-options">{data.themes.map((option) => <label key={option.id} className={`theme-option option-${option.id.toLowerCase()} ${theme === option.id ? 'selected' : ''}`}><input type="radio" name="theme" value={option.id} checked={theme === option.id} onChange={() => setTheme(option.id)} /><span className="theme-gem" aria-hidden="true">◆</span><strong>{option.id}</strong><span>{option.levels} уровней</span><span className="selection-mark" aria-hidden="true">{theme === option.id ? '✓' : '○'}</span></label>)}</div></fieldset>
-          <fieldset disabled={starting || !!data.activeRound}><legend><span className="step">02</span> Выберите ставку <span className="legend-note">в бонусах</span></legend><div className="bet-options">{data.bets.map((bet) => {
-            const unavailable = bet.amount > data.profile.balance;
-            return <label key={bet.id} className={`bet-option ${selectedId === bet.id ? 'selected' : ''} ${unavailable ? 'unavailable' : ''}`}><input type="radio" name="bet" value={bet.id} checked={selectedId === bet.id} disabled={unavailable} onChange={() => setSelectedId(bet.id)} /><span className="bet-multiplier">x{bet.multiplier}</span><strong>{bet.amount}</strong><span className="bet-note">{unavailable ? 'Мало бонусов' : 'бонусов'}</span></label>;
-          })}</div></fieldset>
-          <div className="launch-area"><div className="launch-summary"><span>{selectedBet ? 'Ваша ставка' : 'Всё готово к приключению'}</span><strong>{selectedBet ? `${selectedBet.amount} бонусов · x${selectedBet.multiplier}` : 'Выберите ставку'}</strong></div>
-            {data.activeRound ? <button className="button launch-button" onClick={() => navigate('/game')}>Продолжить полёт <span aria-hidden="true">↗</span></button> : <button className="button launch-button" disabled={!canStart} onClick={start}>{starting ? 'Взлетаем…' : 'Начать'}<span aria-hidden="true">↗</span></button>}
-            <p className="launch-hint">{data.activeRound ? 'У вас уже есть незавершённый раунд' : 'Бонусы спишутся при старте полёта'}</p>
-            {error && <p className="error" role="alert">{error}</p>}
-          </div>
-        </div>
+        {controls}
       </div>
       <div className="flight-footnote"><span>✧ Только вы и новая высота</span><span>Выберите тему → Сделайте ставку → Взлетайте</span></div>
       {!data.activeRound && <DemoLinks />}

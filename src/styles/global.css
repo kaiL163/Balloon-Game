@@ -14,7 +14,16 @@
 
 body {
   margin:0;
-  min-width:320px
+  min-width:0;
+  overflow-wrap:anywhere
+}
+
+img,svg,canvas,video {
+  max-width:100%
+}
+
+button,input,select,textarea {
+  max-width:100%
 }
 
 button,input {
@@ -178,6 +187,8 @@ footer>span:last-child {
   font-size:13px
 }
 
+:root{background:#79cce8}.app{background:linear-gradient(180deg,#eaf9ff 0 82px,#70cbe9 82px,#f5cf72 100%)}.header{max-width:none;padding:12px 34px;border:0;background:#ffffffee;box-shadow:0 4px 18px #2d8eb033;color:#184a69}.brand{font-size:17px;color:#174d6d}.brand-icon{color:#f7a82f;text-shadow:0 2px #e37b24}.brand-partner{margin-left:auto;color:#8ca0ac;font-size:11px;letter-spacing:1px}.brand-partner strong{color:#ef9f29}
+
 @media(max-width:700px) {
   .header {
     padding:20px;
@@ -202,4 +213,3 @@ footer>span:last-child {
     width:100%
   }
 }
-

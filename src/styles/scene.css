@@ -1,0 +1,458 @@
+.unified-scene{position:relative;isolation:isolate;--gold:#ffd35a;--gold-deep:#f2a83a;--sky:#55bfe5;color:#fff;min-height:calc(100vh - 140px);padding:8px 0 20px;overflow:hidden}
+.unified-scene:before{content:'';position:absolute;inset:100px -20% -20%;z-index:-2;background:linear-gradient(180deg,#56c7eb 0%,#9be5ee 58%,#f8d983 100%);border-radius:50% 50% 0 0/12% 12% 0 0;opacity:.98}
+.unified-scene:after{content:'';position:absolute;inset:0;z-index:-3;background:linear-gradient(#1f94ce,#72d1e6 45%,#f5c85d 100%)}
+.scene-cloud{position:absolute;background:#fff9;border-radius:50%;filter:blur(1px);width:180px;height:42px;z-index:-1}.scene-cloud:before,.scene-cloud:after{content:'';position:absolute;background:#fff;border-radius:50%}.scene-cloud:before{width:85px;height:70px;left:30px;bottom:0}.scene-cloud:after{width:62px;height:55px;right:18px;bottom:0}.cloud-a{top:28%;left:-30px}.cloud-b{top:15%;right:-40px;transform:scale(1.3)}.cloud-c{bottom:12%;left:38%;transform:scale(.8);opacity:.55}
+.scene-topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin:0 0 20px}.scene-title>span{font-size:10px;font-weight:900;letter-spacing:2px;color:#fff9}.scene-title h1{margin:7px 0;color:#fff;font-size:clamp(32px,4vw,54px);text-shadow:0 3px 0 #d57b2a;letter-spacing:-2px}.scene-title em{font-style:normal;color:#fff1a8}.scene-actions{display:flex;align-items:center;gap:10px}.scene-actions button{border:1px solid #fff8;background:#ffffff28;color:#fff;border-radius:18px;padding:10px 13px;display:flex;gap:7px;align-items:center;cursor:pointer}.scene-actions button b{background:#fff;color:#ed9d2e;border-radius:50%;width:20px;height:20px;display:grid;place-items:center}.scene-actions button span{font-size:11px}.scene-balance{display:flex;align-items:center;gap:8px;background:#fff;border-radius:18px;padding:8px 14px;color:#43748b;font-size:10px;font-weight:700}.scene-balance i{color:#f6b332;font-size:22px;font-style:normal}.scene-balance small{display:block;color:#d88c26;font-size:14px}
+.scene-board{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,.8fr);gap:20px;align-items:stretch}.world-stage{position:relative;min-height:560px;border:4px solid #fff9;border-radius:34px;background:linear-gradient(180deg,#65c8ecaa,#8bdded 55%,#f8cb65 100%);box-shadow:0 16px 0 #d58a38aa,0 25px 50px #814c1f55;overflow:hidden}.lobby-world{height:100%;min-height:560px;position:relative;display:grid;place-items:center}.sun{position:absolute;width:220px;height:220px;border-radius:50%;background:#ffe68c;top:14%;left:18%;filter:blur(2px);opacity:.8}.lobby-world .flight-scene{transform:scale(1.35);width:450px;height:390px}.lobby-world .air-balloon{animation:float 4s ease-in-out infinite}.lobby-coefficient{position:absolute;right:8%;top:28%;text-align:center;color:#317797}.lobby-coefficient span,.lobby-coefficient em{display:block;font-size:10px;letter-spacing:1.5px;font-style:normal}.lobby-coefficient strong{display:block;font-size:64px;line-height:1;color:#fff;text-shadow:0 3px 0 #3ba0bc}.active-world,.active-world .game-sky{height:100%;min-height:560px}.active-world .game-sky{border-radius:0;background:linear-gradient(#299bc8,#9fe0eb 58%,#f2bf52)}.flight-side{background:#fff;border-radius:30px;padding:8px 18px 18px;box-shadow:0 16px 0 #d58a38aa;color:#34566c}.flight-side .game-controls{color:#34566c}.flight-side .game-controls p,.flight-side .flight-stats dt,.flight-side .cashout-hint{color:#6e8b98}.flight-side .live-multiplier{color:#ed9d2e}.flight-side .scenario-banner{margin:0}.flight-side .game-error{color:#b14d38}.flight-side .booster-status{background:#fff8;border-color:#e7c976}.lobby-panel{background:#fff;border-radius:30px;padding:28px;color:#31566d;box-shadow:0 16px 0 #d58a38aa;display:flex;flex-direction:column;gap:22px}.panel-heading>span{display:block;color:#efaa32;font-size:10px;font-weight:900;letter-spacing:2px}.panel-heading strong{display:block;font-size:25px;margin-top:4px}.lobby-panel fieldset{border:0;padding:0;margin:0}.lobby-panel legend{font-size:13px;font-weight:800;margin-bottom:10px}.lobby-panel legend small{float:right;color:#9bb0b9;font-weight:400}.theme-pills{display:grid;grid-template-columns:1fr 1fr;gap:10px}.theme-pills label{position:relative;border:2px solid #d6e7ec;border-radius:16px;padding:12px;display:grid;grid-template-columns:24px 1fr;gap:3px 7px;cursor:pointer}.theme-pills label.selected{border-color:#efb333;background:#fff7dc}.theme-pills input,.stake-grid input{position:absolute;opacity:0}.theme-pills i{grid-row:span 2;width:22px;height:22px;border-radius:50%;background:#73bc57}.theme-pills .option-red i{background:#eb735e}.theme-pills small{font-size:10px;color:#8aa4ae}.stake-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.stake-grid label{position:relative;text-align:center;border:2px solid #d6e7ec;border-radius:14px;padding:9px 3px;cursor:pointer}.stake-grid label.selected{border-color:#efb333;background:#fff7dc}.stake-grid span{display:block;color:#ef9f2d;font-size:11px;font-weight:800}.stake-grid strong{display:block;font-size:20px}.stake-grid small{font-size:9px;color:#8aa4ae}.stake-grid .unavailable{opacity:.4}.start-flight{width:100%;border:0;border-radius:18px;padding:17px;background:linear-gradient(180deg,#ffd95b,#f3a32c);color:#754b15;font-weight:900;font-size:20px;display:flex;align-items:center;justify-content:center;gap:18px;cursor:pointer;box-shadow:0 7px 0 #d27b24}.start-flight:disabled{opacity:.5;cursor:not-allowed}.start-flight i{font-style:normal;font-size:28px}.start-note{text-align:center;color:#9aaeb7;font-size:10px;margin:-12px 0 0}.scene-footer{display:flex;justify-content:space-between;color:#fff;font-size:11px;font-weight:700;margin-top:22px}.scene-footer span:first-child{color:#fff8b5}.scene-error{color:#d45542;font-size:12px;margin:0}.scene-loader{text-align:center;padding:100px 20px;color:#fff;background:linear-gradient(#50b9dd,#f4c45e);border-radius:30px}.loader-balloon{font-size:70px;color:#ed8c35;animation:float 2s ease-in-out infinite}.result-state{text-align:center;padding:70px 30px;max-width:620px;margin:auto;color:#fff}.result-sun{font-size:70px;color:#ffe16d;text-shadow:0 4px 0 #d99032}.result-state p{color:#fff;font-size:11px;letter-spacing:2px;font-weight:900}.result-state h2{font-size:42px;margin:8px}.result-prize{font-size:60px;font-weight:900;color:#fff29d;text-shadow:0 3px 0 #d5842c}.result-prize small{display:block;font-size:13px;text-shadow:none}.result-inline-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;background:#fff3;border-radius:15px;padding:15px;margin:22px 0}.result-inline-stats span{font-size:10px}.result-inline-stats b{display:block;font-size:18px}.result-state .reward-card{background:#fff;color:#365b6e}.play-again{max-width:360px;margin:auto}.idle-countdown{display:block;margin-top:18px;color:#fff9}
+.mode-in_game .scene-title h1{font-size:38px}.mode-in_game .world-stage{min-height:560px}.mode-in_game .scene-board{grid-template-columns:minmax(0,1.55fr) minmax(300px,.75fr)}
+@media(max-width:900px){.scene-topbar{flex-direction:column}.scene-actions{width:100%;justify-content:space-between}.scene-board{grid-template-columns:1fr}.world-stage,.lobby-world,.active-world,.active-world .game-sky{min-height:470px}.lobby-panel{order:-1}.lobby-world .flight-scene{transform:scale(1.05)}.scene-footer{flex-direction:column;gap:8px}.result-inline-stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.scene-actions button span{display:none}.scene-balance{margin-left:auto}.scene-title h1{font-size:34px}.world-stage,.lobby-world,.active-world,.active-world .game-sky{min-height:390px}.lobby-coefficient{right:3%;top:20%;scale:.8}.stake-grid{grid-template-columns:repeat(2,1fr)}.lobby-panel{padding:20px}.mode-in_game .scene-title h1{font-size:30px}}
+
+/* visual direction: one sunny playfield with a floating stake card */
+.unified-scene{min-height:calc(100vh - 108px)}
+.scene-topbar{align-items:center;margin-bottom:12px}.scene-title h1{font-size:clamp(27px,3vw,42px);margin:3px 0}
+.scene-board{grid-template-columns:305px minmax(0,1fr);gap:16px}.world-stage{grid-column:2;border:0;border-radius:28px}.lobby-panel{grid-column:1;grid-row:1}.lobby-world .flight-scene{transform:scale(1.55)}
+.lobby-world .canopy{background:linear-gradient(105deg,#e88919,#ffb72d 26%,#fff08d 49%,#f59b19 75%,#c66b12);box-shadow:inset 8px 10px 20px #fff8,inset -10px -5px 20px #8d4b1270}.lobby-world .canopy:before{background:linear-gradient(90deg,#ffd76a,#fff6bd 48%,#eab436)}.lobby-world .canopy-stripe{background:#d87917}
+.mode-in_game .world-stage{grid-column:1}.mode-in_game .flight-side{grid-column:2;grid-row:1}
+.mode-in_game .active-world{animation:scene-reveal .65s ease both}.mode-in_game .flight-side{animation:panel-slide .55s .12s ease both}.is-launching .flying-position{animation:launch-rise .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes scene-reveal{from{opacity:.35;filter:saturate(.7) brightness(1.25)}to{opacity:1;filter:none}}@keyframes panel-slide{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes launch-rise{from{transform:translate(-50%,120px) scale(1.35);opacity:.45}to{transform:translateX(-50%);opacity:1}}
+@media(max-width:900px){.scene-topbar{align-items:flex-start}.scene-board{grid-template-columns:1fr}.world-stage,.lobby-panel{grid-column:1}.lobby-panel{grid-row:2}.lobby-world .flight-scene{transform:scale(1.1)}}
+
+/* Viewport scene: the same left controls / sky composition in every mode. */
+.app { background: linear-gradient(180deg,#36a9d7 0%,#8ddceb 65%,#f5d58b 100%); }
+.header { height:72px; min-height:72px; margin:0; padding:0 40px; background:#e9f8ffed; box-shadow:0 1px 0 #ffffff80; }
+.brand { font-size:21px; line-height:1.05; }
+.scene-actions { flex-direction:row-reverse; gap:16px; }
+.scene-actions button { color:#285b74; border-color:#a9cedc; background:#fff8; padding:10px 16px; border-radius:14px; }
+.scene-actions button span { font-size:16px; }
+.scene-actions button b { width:24px; height:24px; }
+.scene-balance { font-size:13px; padding:5px 18px; gap:12px; background:#fff; border:1px solid #cee3e9; }
+.scene-balance small { font-size:22px; line-height:1.3; color:#946019; }
+.scene-balance i { font-size:30px; }
+main { max-width:none; margin:0; padding:0; }
+.app > footer { max-width:none; padding:12px 40px; background:#f5d58b; color:#496372; font-size:13px; }
+.unified-scene { width:100%; min-height:calc(100dvh - 72px); padding:28px 40px 18px; display:flex; flex-direction:column; overflow:hidden; }
+.unified-scene:before,.unified-scene:after { display:none; }
+.scene-topbar { margin:0 0 20px; min-height:112px; }
+.scene-title > span { font-size:13px; color:#ecfbff; }
+.scene-title h1,.mode-in_game .scene-title h1 { font-size:46px; line-height:1.12; margin:8px 0 0; }
+.scene-title h1 br { display:none; }
+.scene-title h1 em:before { content:' '; }
+.scene-board,.mode-in_game .scene-board { flex:1; grid-template-columns:360px minmax(0,1fr); gap:40px; min-height:680px; }
+.world-stage,.mode-in_game .world-stage { grid-column:2; grid-row:1; min-height:680px; background:none; border:0; border-radius:0; box-shadow:none; }
+.lobby-world,.active-world,.active-world .game-sky { height:100%; min-height:680px; }
+.active-world .game-sky { background:none; margin:0; }
+.lobby-panel,.mode-in_game .flight-side { grid-column:1; grid-row:1; align-self:center; padding:28px; border-radius:26px; background:#fffffff2; box-shadow:0 10px 0 #d58a3855,0 24px 60px #246d8b26; }
+.lobby-panel { gap:24px; }
+.panel-heading > span { font-size:12px; color:#a36b16; }
+.panel-heading strong { font-size:28px; }
+.lobby-panel legend { font-size:18px; margin-bottom:12px; }
+.lobby-panel legend small { font-size:14px; color:#658492; }
+.theme-pills label { padding:16px 10px; gap:3px 8px; }
+.theme-pills strong { font-size:18px; }
+.theme-pills small { font-size:13px; color:#547384; }
+.stake-grid { grid-template-columns:repeat(2,1fr); gap:12px; }
+.stake-grid label { padding:12px 8px; }
+.stake-grid span { font-size:15px; color:#99601b; }
+.stake-grid strong { font-size:32px; }
+.stake-grid small { font-size:13px; color:#547384; }
+.start-flight { min-height:68px; font-size:24px; }
+.start-note { font-size:13px; color:#58798a; margin:0; }
+.theme-pills label:has(input:focus-visible),.stake-grid label:has(input:focus-visible) { outline:3px solid #267dad; outline-offset:3px; }
+.lobby-world .flight-scene { width:100%; max-width:none; height:100%; position:absolute; inset:0; transform:none; }
+.lobby-world .air-balloon { top:calc(50% - 118px); scale:2.8; transform-origin:50% 50%; }
+.lobby-world .orbit,.lobby-world .altitude,.lobby-world .scene-caption,.lobby-world .star,.lobby-coefficient { display:none; }
+.sun { width:430px; height:430px; top:calc(50% - 280px); left:calc(50% - 215px); opacity:.36; filter:blur(30px); }
+.scene-cloud { width:260px; height:60px; opacity:.7; }
+.cloud-a { top:52%; left:24%; }
+.cloud-b { top:22%; right:5%; }
+.cloud-c { bottom:8%; left:64%; transform:scale(1.8); }
+.scene-footer { font-size:15px; margin-top:20px; color:#315c70; }
+.scene-footer span:first-child { color:#77531b; }
+.unified-scene .demo-links { margin-top:12px; font-size:13px; color:#365f72; }
+.flight-side .game-controls { padding:0; }
+.flight-side .eyebrow { font-size:13px; color:#997020; }
+.flight-side .live-multiplier { font-size:76px; }
+.flight-side .flight-motto,.flight-side .flight-stats dt,.flight-side .cashout-hint { font-size:15px; }
+.flight-side .flight-stats dd { font-size:24px; }
+.flight-side .flight-stats dd small,.flight-side .booster-status small { font-size:13px; color:#547384; }
+.flight-side .points-value,.flight-side .booster-status strong { color:#986218; }
+.flight-side .booster-status { font-size:15px; }
+.flight-side .cashout-button { font-size:22px; min-height:74px; }
+.flight-side .cashout-button small { font-size:14px; }
+.active-world .sky-label,.active-world .sky-bottom { font-size:14px; color:#285d76; }
+.active-world .flight-level { font-size:16px; color:#35627a; }
+.active-world .level-line { border-color:#ffffff60; }
+.active-world .flying-position { left:50%; width:196px; height:270px; }
+.active-world .flight-balloon.air-balloon { scale:1.15; }
+.active-world .level-points { left:200px; }
+.active-world .crash-burst { left:100px; top:125px; }
+.mode-result .world-stage { display:grid; align-items:center; }
+.mode-result .scene-board { grid-template-columns:minmax(0,1fr) !important; }
+.mode-result .world-stage { grid-column:1; width:100%; overflow:hidden; }
+.mode-result .result-state { width:min(100%, 760px); padding:20px 30px 14px; }
+.mode-result .result-sun { font-size:52px; }
+.mode-result .result-state h2 { font-size:36px; }
+.mode-result .result-prize { font-size:50px; }
+.mode-result .result-inline-stats { margin:10px 0; padding:12px; }
+.mode-result .result-state .reward-card { margin:10px 0; padding:14px 20px; }
+.mode-result .play-again { min-height:54px; }
+.mode-result .idle-countdown { margin-top:10px; }
+@media(max-width:1100px) {
+  .header { padding:0 24px; }
+  .unified-scene { padding:24px; }
+  .scene-board,.mode-in_game .scene-board { grid-template-columns:320px minmax(0,1fr); gap:24px; }
+  .lobby-panel,.mode-in_game .flight-side { padding:22px; }
+  .lobby-world .air-balloon { scale:2.1; }
+}
+@media(max-width:760px) {
+  .header { height:auto; min-height:72px; flex-wrap:wrap; padding:14px 20px; }
+  #game-header-actions { margin-left:auto; }
+  .scene-actions { gap:8px; }
+  .scene-actions button { padding:8px; }
+  .scene-actions button span { display:none; }
+  .scene-balance { padding:5px 10px; }
+  .scene-balance small { font-size:16px; }
+  .unified-scene { padding:20px; }
+  .scene-topbar { min-height:0; }
+  .scene-title h1,.mode-in_game .scene-title h1 { font-size:32px; }
+  .scene-board,.mode-in_game .scene-board { grid-template-columns:1fr; min-height:0; }
+  .world-stage,.mode-in_game .world-stage { grid-column:1; grid-row:1; min-height:440px; }
+  .lobby-world,.active-world,.active-world .game-sky { min-height:440px; }
+  .lobby-panel,.mode-in_game .flight-side { grid-column:1; grid-row:2; width:100%; }
+  .lobby-world .air-balloon { scale:1.6; }
+  .flight-side .game-controls { display:flex; }
+  .flight-side .cashout-button { position:static; width:100%; }
+  .active-world .flying-position { width:110px; height:150px; }
+  .active-world .flight-balloon.air-balloon { scale:.62; }
+  .scene-footer { font-size:13px; }
+}
+
+/* Smooth in-place launch transition and viewport fitting */
+@media (min-width: 761px) {
+  .unified-scene { min-height: calc(100dvh - 72px); height: calc(100dvh - 72px); }
+  .scene-board { min-height: 0; height: calc(100dvh - 235px); }
+  .world-stage,.lobby-world,.active-world,.active-world .game-sky { min-height: 0; height: 100%; }
+  .lobby-panel { transition: transform .65s ease, opacity .55s ease, width .65s ease, padding .65s ease; transform-origin:left center; }
+  .mode-in_game .lobby-panel { width:216px; padding-left:18px; padding-right:18px; opacity:.96; transform:scaleX(.6); }
+  .mode-in_game .world-stage { transition: transform .7s cubic-bezier(.2,.8,.2,1); transform:translateX(40px); }
+  .lobby-world .air-balloon { transition: top .9s cubic-bezier(.2,.8,.2,1), left .9s ease; }
+  .mode-in_game .active-world .flying-position { transition: bottom 1s cubic-bezier(.2,.8,.2,1), left .8s ease; }
+}
+@media (max-width:760px) {
+  .unified-scene { min-height:calc(100dvh - 72px); padding:14px 16px 8px; }
+  .scene-board { gap:12px; }
+  .world-stage,.lobby-world,.active-world,.active-world .game-sky { min-height: min(52dvh, 420px); height:min(52dvh,420px); }
+  .scene-footer,.demo-links { display:none; }
+  .lobby-panel { padding:16px; gap:14px; }
+  .panel-heading strong { font-size:22px; }
+  .lobby-panel legend { font-size:15px; }
+  .start-flight { min-height:56px; font-size:20px; }
+}
+
+/* Final viewport corrections */
+html, body, #root { width:100%; min-width:0; height:100%; overflow:hidden; }
+.app { width:100%; height:100dvh; min-height:0; overflow:hidden; }
+.app > main { width:100vw !important; max-width:none !important; height:calc(100dvh - 72px); min-height:0; margin:0 !important; padding:0 24px !important; overflow:hidden; }
+.app > footer { display:none; }
+.unified-scene { width:100%; height:100%; min-height:0; max-width:none; margin:0; padding:18px 0 12px; overflow:hidden; }
+.scene-topbar { width:100%; margin:0 0 14px; }
+.scene-board { width:100%; height:calc(100% - 120px); min-height:0; grid-template-columns:360px minmax(0,1fr) !important; gap:24px; }
+.world-stage,.lobby-world,.active-world,.active-world .game-sky { min-height:0 !important; height:100%; }
+.lobby-panel { width:360px; max-width:none; align-self:center; justify-self:start; }
+.lobby-world .air-balloon { left:56%; top:calc(50% - 118px); }
+@media (min-width:1100px) {
+ .scene-board { grid-template-columns:380px minmax(0,1fr) !important; gap:28px; }
+ .lobby-panel { width:380px; }
+ .world-stage { transform:none; }
+ .lobby-world .air-balloon { left:58%; scale:2.55; }
+}
+@media (max-width:760px) {
+ html,body,#root { overflow:auto; }
+ .app { height:auto; min-height:100dvh; overflow:visible; }
+ .app > main { height:auto; min-height:calc(100dvh - 72px); overflow:visible; padding:0 12px !important; }
+ .unified-scene { height:auto; min-height:calc(100dvh - 72px); overflow:visible; }
+ .scene-board { height:auto; grid-template-columns:1fr !important; }
+ .lobby-panel { width:100%; }
+ .lobby-world .air-balloon { left:56%; scale:1.65; }
+}
+
+/* Keep the lobby card inside short desktop viewports so it cannot overlap the footer. */
+@media (min-width:761px) and (max-height:900px) {
+ .mode-pre_game .scene-topbar { min-height:88px; }
+ .mode-pre_game .lobby-panel { max-height:100%; padding:14px 18px; gap:8px; }
+ .mode-pre_game .panel-heading > span { font-size:10px; }
+ .mode-pre_game .panel-heading strong { font-size:22px; line-height:1.25; }
+ .mode-pre_game .lobby-panel legend { font-size:14px; margin-bottom:4px; }
+ .mode-pre_game .lobby-panel legend small { font-size:11px; }
+ .mode-pre_game .theme-pills label { padding:6px 8px; }
+ .mode-pre_game .theme-pills strong { font-size:15px; }
+ .mode-pre_game .theme-pills small { font-size:11px; }
+ .mode-pre_game .stake-grid { gap:6px; }
+ .mode-pre_game .stake-grid label { padding:4px 6px; }
+ .mode-pre_game .stake-grid span { font-size:12px; line-height:1.2; }
+ .mode-pre_game .stake-grid strong { font-size:24px; line-height:1.15; }
+ .mode-pre_game .stake-grid small { font-size:11px; }
+ .mode-pre_game .start-flight { min-height:48px; padding:6px 14px; font-size:19px; }
+ .mode-pre_game .start-flight i { font-size:24px; }
+ .mode-pre_game .start-note { font-size:11px; line-height:1.2; }
+ .mode-pre_game .scene-footer { margin-top:8px; }
+ .mode-pre_game .demo-links { margin-top:4px; }
+}
+
+/* Unified responsive layer. Keep this last: older visual experiments above
+   intentionally remain as design history, while these rules own layout. */
+html,body,#root {
+  width:100%;
+  min-width:0;
+  min-height:100%;
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+
+.app {
+  width:100%;
+  min-width:0;
+  min-height:100dvh;
+  height:auto;
+  overflow:visible;
+}
+
+.header {
+  width:100%;
+  max-width:none;
+  flex:0 0 auto;
+}
+
+#game-header-actions,
+.scene-actions,
+.scene-board,
+.world-stage,
+.lobby-panel,
+.flight-side {
+  min-width:0;
+}
+
+.app > main {
+  width:100%;
+  max-width:none;
+  min-width:0;
+  height:auto;
+  min-height:calc(100dvh - 72px);
+  margin:0;
+  padding:0 clamp(16px,3vw,40px) 24px !important;
+  overflow:visible;
+}
+
+.unified-scene {
+  width:100%;
+  height:auto;
+  min-height:calc(100dvh - 72px);
+  padding:clamp(16px,2vw,28px) 0 18px;
+  overflow:visible;
+}
+
+.scene-topbar {
+  min-height:0;
+  margin-bottom:clamp(14px,2vw,20px);
+}
+
+.scene-title {
+  min-width:0;
+}
+
+.scene-title h1,
+.mode-in_game .scene-title h1 {
+  font-size:clamp(30px,3.2vw,46px);
+}
+
+.scene-board,
+.mode-in_game .scene-board {
+  width:100%;
+  height:auto;
+  min-height:clamp(500px,calc(100dvh - 245px),760px);
+  grid-template-columns:minmax(280px,380px) minmax(0,1fr) !important;
+  gap:clamp(18px,2.5vw,40px);
+}
+
+.world-stage,
+.mode-in_game .world-stage,
+.lobby-world,
+.active-world,
+.active-world .game-sky {
+  min-height:clamp(500px,calc(100dvh - 245px),760px) !important;
+  height:auto;
+}
+
+.world-stage,
+.mode-in_game .world-stage {
+  grid-column:2;
+  grid-row:1;
+}
+
+.lobby-panel,
+.mode-in_game .flight-side {
+  grid-column:1;
+  grid-row:1;
+  width:100%;
+  max-width:380px;
+  justify-self:stretch;
+}
+
+.lobby-world .air-balloon {
+  left:56%;
+  top:calc(50% - 118px);
+  scale:clamp(1.7,2.3vw,2.55);
+}
+
+.scene-footer {
+  flex-wrap:wrap;
+  gap:8px 20px;
+}
+
+@media (max-width:900px) {
+  .scene-board,
+  .mode-in_game .scene-board {
+    grid-template-columns:minmax(250px,310px) minmax(0,1fr) !important;
+    gap:18px;
+  }
+
+  .lobby-panel,
+  .mode-in_game .flight-side {
+    padding:18px;
+  }
+
+  .panel-heading strong { font-size:22px; }
+  .lobby-panel legend { font-size:15px; }
+  .theme-pills label { padding:10px 8px; }
+  .stake-grid { gap:7px; }
+  .stake-grid label { padding:7px 4px; }
+  .stake-grid strong { font-size:24px; }
+  .start-flight { min-height:56px; font-size:20px; }
+}
+
+@media (max-width:760px) {
+  .header {
+    min-height:0;
+    height:auto;
+    padding:12px 16px;
+    gap:10px 14px;
+  }
+
+  .brand { flex:0 1 auto; }
+  #game-header-actions { margin-left:auto; }
+  .scene-actions { gap:6px; }
+  .scene-actions button { padding:7px; }
+  .scene-balance { padding:4px 8px; gap:6px; }
+  .scene-balance i { font-size:22px; }
+  .scene-balance small { font-size:14px; white-space:nowrap; }
+
+  .app > main {
+    min-height:calc(100dvh - 68px);
+    padding:0 clamp(10px,3.5vw,18px) 20px !important;
+  }
+
+  .unified-scene {
+    min-height:calc(100dvh - 68px);
+    padding:16px 0 12px;
+  }
+
+  .scene-title > span { font-size:10px; }
+  .scene-title h1,
+  .mode-in_game .scene-title h1 {
+    font-size:clamp(26px,9vw,34px);
+    letter-spacing:-1px;
+  }
+
+  .scene-board,
+  .mode-in_game .scene-board {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) !important;
+    min-height:0;
+    height:auto;
+    gap:14px;
+  }
+
+  .world-stage,
+  .mode-in_game .world-stage {
+    grid-column:1;
+    grid-row:1;
+    min-height:clamp(300px,52dvh,440px) !important;
+    height:clamp(300px,52dvh,440px);
+    border-radius:20px;
+  }
+
+  .lobby-world,
+  .active-world,
+  .active-world .game-sky {
+    min-height:0 !important;
+    height:100%;
+  }
+
+  .lobby-panel,
+  .mode-in_game .flight-side {
+    grid-column:1;
+    grid-row:2;
+    width:100%;
+    max-width:none;
+    padding:clamp(15px,4vw,22px);
+    border-radius:22px;
+  }
+
+  .lobby-panel { gap:14px; }
+  .lobby-world .air-balloon { left:54%; scale:clamp(1.25,5vw,1.65); }
+  .flight-side .game-controls { display:flex; padding:0; }
+  .flight-side .cashout-button { position:static; width:100%; }
+  .scene-footer { font-size:12px; }
+}
+
+@media (max-width:480px) {
+  .header { align-items:flex-start; }
+  .brand { font-size:16px; }
+  .brand-icon { font-size:24px; }
+  #game-header-actions { width:100%; margin:0; }
+  .scene-actions { width:100%; justify-content:stretch; flex-direction:row; }
+  .scene-actions button { flex:0 0 38px; justify-content:center; }
+  .scene-balance { flex:1; justify-content:center; min-width:0; }
+  .scene-balance span { min-width:0; }
+  .scene-balance small { font-size:13px; overflow-wrap:normal; }
+
+  .scene-title h1 br { display:block; }
+  .scene-title h1 em:before { content:none; }
+  .scene-board,.mode-in_game .scene-board { gap:10px; }
+  .world-stage,.mode-in_game .world-stage {
+    min-height:300px !important;
+    height:46dvh;
+    max-height:390px;
+  }
+  .sun { width:280px; height:280px; left:calc(50% - 140px); }
+  .lobby-world .air-balloon { left:52%; scale:1.2; }
+  .theme-pills { grid-template-columns:1fr; }
+  .theme-pills label { grid-template-columns:22px 1fr auto; }
+  .theme-pills small { grid-column:3; grid-row:1; align-self:center; }
+  .stake-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .result-state { padding:30px 14px; }
+  .result-state h2 { font-size:30px; }
+  .result-prize { font-size:42px; }
+  .result-inline-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .reward-card { align-items:flex-start; }
+  .reward-icon { font-size:34px; }
+}
+
+@media (max-width:340px) {
+  .app > main { padding-inline:8px !important; }
+  .header { padding-inline:10px; }
+  .scene-actions button { flex-basis:34px; }
+  .scene-balance { font-size:9px; }
+  .scene-balance small { font-size:12px; }
+  .lobby-panel,.mode-in_game .flight-side { padding:14px 12px; }
+}
+
+@media (min-width:761px) and (max-height:700px) {
+  .app > main,.unified-scene { min-height:620px; }
+  .scene-board,.mode-in_game .scene-board,
+  .world-stage,.mode-in_game .world-stage,
+  .lobby-world,.active-world,.active-world .game-sky {
+    min-height:470px !important;
+  }
+}

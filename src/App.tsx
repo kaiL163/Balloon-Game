@@ -1,17 +1,12 @@
-import { Navigate, Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router';
 import { Layout } from './components/Layout';
-import { BetPage } from './pages/BetPage';
-import { GamePage } from './pages/GamePage';
-import { ResultPage } from './pages/ResultPage';
+import { GameScene } from './pages/GameScene';
 
 export function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<BetPage />} />
-        <Route path="game" element={<GamePage />} />
-        <Route path="result" element={<ResultPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<GameScene />} />
       </Route>
     </Routes>
   );

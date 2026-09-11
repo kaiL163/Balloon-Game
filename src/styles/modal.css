@@ -67,3 +67,18 @@
   .modal-content { padding: 20px 18px; }
   .game-modal { border-radius: 18px; max-height: calc(100dvh - 24px); }
 }
+
+@media (max-width: 420px) {
+  .game-modal,
+  .game-modal-wide {
+    width:calc(100% - 16px);
+    max-height:calc(100dvh - 16px);
+    border-radius:14px;
+  }
+  .modal-header { gap:10px; padding:18px 14px 14px; }
+  .modal-header h2 { font-size:21px; }
+  .modal-close { padding:6px 9px; }
+  .modal-content { padding:16px 14px; }
+  .rules-list { gap:15px; }
+  .rules-list li { gap:10px; }
+}
