@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router';
 import { gameApi } from '../api';
+import { RulesModal } from '../components/RulesModal';
 import type { Theme } from '../types';
 import { playWaterDrop, startBirdAmbience } from '../utils/audio';
 import landscapeUrl from '../assets/theme-select-landscape.png';
@@ -61,6 +62,7 @@ const options: { theme: Theme; title: string; levels: number; route: string }[] 
 export function ThemeSelectPage() {
   const navigate = useNavigate();
   const [selecting, setSelecting] = useState(false);
+  const [showRules, setShowRules] = useState(false);
   const [visit] = useState(() => Math.random());
   const [portalReady, setPortalReady] = useState(false);
 
@@ -179,6 +181,17 @@ export function ThemeSelectPage() {
           );
         })}
       </div>
+
+      <button
+        type="button"
+        className="theme-balloon-card theme-how-to-play"
+        onClick={() => setShowRules(true)}
+        aria-haspopup="dialog"
+      >
+        Как играть?
+      </button>
+
+      {showRules && <RulesModal onClose={() => setShowRules(false)} />}
     </section>
   );
 }
