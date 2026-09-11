@@ -1,0 +1,167 @@
+.game-page { --accent: #b5ef75; }
+.game-page.theme-red { --accent: #ffa28b; }
+.game-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+.game-heading h1 { font-size: clamp(28px, 3.5vw, 42px); }
+.game-route { color: #a9bdb5; border: 1px solid #ffffff18; padding: 10px 16px; border-radius: 30px; font-size: 11px; letter-spacing: 1px; white-space: nowrap; }
+.game-panel { display: grid; grid-template-columns: 1.35fr 1fr; border: 1px solid #ffffff15; border-radius: 26px; overflow: hidden; background: #151e26; box-shadow: 0 25px 80px #0003; }
+.game-sky { position: relative; min-height: 630px; overflow: hidden; background: radial-gradient(ellipse at 60% 70%, #315c5755, transparent 70%), linear-gradient(#101f32, #193d3e); }
+.game-sky.scene-red { background: radial-gradient(ellipse at 60% 70%, #82584340, transparent 70%), linear-gradient(#211e35, #463134); }
+.sky-label { display: flex; justify-content: space-between; position: absolute; top: 24px; left: 26px; right: 26px; font-size: 9px; letter-spacing: 1.8px; color: #bfd3cb; z-index: 2; }
+.sky-bottom { position: absolute; bottom: 12px; left: 25px; right: 25px; display: flex; justify-content: space-between; font-size: 8px; letter-spacing: 1.5px; color: #b3c4c5; }
+.sky-bottom span { letter-spacing: 0; }
+.sky-stars { position: absolute; inset: 80px 15% auto 40%; color: #a1c4b299; font-size: 24px; display: flex; justify-content: space-between; }
+.sky-stars span { transform: translateY(160px); font-size: 15px; }
+.sky-cloud { position: absolute; height: 75px; width: 240px; background: radial-gradient(ellipse at 50% 70%, #cee0df1a, transparent 65%); border-radius: 50%; pointer-events: none; animation: clouds-drift 24s linear infinite alternate; }
+.sky-cloud::before { content: ''; position: absolute; inset: -20px 50px 0 30px; border-radius: 50%; background: radial-gradient(ellipse, #e2eddf15, transparent 70%); }
+.sky-cloud-one { top: 22%; left: 15%; }
+.sky-cloud-two { bottom: 18%; right: -30px; animation-delay: -10s; }
+.level-track { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; }
+.flight-level { position: absolute; left: 24px; right: 24px; display: flex; align-items: center; gap: 9px; font-size: 10px; color: #819caa; height: 22px; transition: color .2s; }
+.level-number { width: 19px; }
+.level-line { flex: 1; border-top: 1px dashed #bfd3d218; }
+.level-value { width: 33px; text-align: right; }
+.level-passed { color: var(--accent); }
+.level-passed .level-line { border-color: #b5ef752a; border-style: solid; }
+.level-current .level-number { background: #b5ef7522; border-radius: 5px; text-align: center; }
+.level-booster { position: absolute; right: 60px; padding: 4px 9px; border: 1px solid #f9d38b60; border-radius: 8px; background: #41372c; color: #f9d38b; font-weight: 800; box-shadow: 0 0 24px #ffd07818; }
+.level-booster.booster-missed { color: #9a9ba1; background: #253139; border-color: #ffffff20; text-decoration: line-through; }
+.level-booster.booster-activated { color: #d8ffa7; background: #365830; border-color: #b5ef75; }
+.flying-position { position: absolute; left: 48%; width: 100px; height: 145px; transform: translateX(-50%); transition: bottom 80ms linear; pointer-events: none; }
+.flight-balloon.air-balloon { top: 0; left: 0; transform: none; width: 176px; scale: .62; transform-origin: top left; animation: flight-sway 4s ease-in-out infinite; filter: drop-shadow(0 10px 20px #0006); }
+.level-points { position: absolute; top: -5px; left: 105px; color: #c6ff99; font-size: 28px; font-weight: 800; text-shadow: 0 0 20px #91ed84aa; animation: points-rise 1.1s ease-out both; }
+.booster-flash { position: absolute; z-index: 5; left: 50%; top: 40%; transform: translate(-50%, -50%); padding: 25px; border: 1px solid #f9d38b; border-radius: 18px; background: #293125ee; color: #ffe2a2; text-align: center; font-size: 29px; font-weight: 900; white-space: nowrap; box-shadow: 0 0 100px #d8ee7777; animation: booster-pop 1.5s ease-out both; }
+.booster-flash small { display: block; font-size: 14px; margin-top: 5px; color: #c4f48c; }
+.sky-crashed .flight-balloon { animation: balloon-pop .7s ease-out forwards; }
+.sky-crashed { animation: sky-shake .4s ease-out; }
+.crash-burst { position: absolute; left: 53px; top: 65px; }
+.crash-burst i { position: absolute; width: 9px; height: 17px; background: var(--accent); border-radius: 2px; transform-origin: 0 0; animation: fragment-fly 1.2s ease-out both; }
+.crash-burst i:nth-child(2n) { background: #f6d3aa; }
+.crash-caption { position: absolute; inset: 35% 0 auto; text-align: center; font-size: 30px; font-weight: 800; color: #ffc6b7; text-shadow: 0 2px 25px #000; animation: caption-appear .5s .25s both; }
+.crash-caption span { display: block; font-size: 54px; }
+.game-controls { padding: 34px; display: flex; flex-direction: column; text-align: center; }
+.game-controls > .eyebrow { margin: 0; }
+.live-multiplier { font-size: clamp(48px, 6vw, 82px); font-weight: 850; font-variant-numeric: tabular-nums; letter-spacing: -4px; line-height: 1.3; color: var(--accent); }
+.live-multiplier span { font-size: .48em; letter-spacing: 0; }
+.multiplier-crashed { color: #ff9b8d; }
+.flight-motto { font-size: 11px; margin: 0 0 25px; }
+.flight-stats { display: grid; gap: 15px; text-align: left; margin: 0 0 24px; }
+.flight-stats > div { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid #ffffff0a; padding-bottom: 12px; }
+.flight-stats dt { font-size: 11px; color: #a1b1ba; }
+.flight-stats dd { margin: 0; font-size: 19px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.flight-stats dd small { font-size: 9px; color: #a1b1ba; }
+.points-value { color: #f9d38b; }
+.booster-status { display: flex; align-items: center; gap: 14px; padding: 14px; background: #ffffff04; border: 1px solid #ffffff12; border-radius: 12px; text-align: left; font-size: 12px; margin-bottom: 24px; }
+.booster-status strong { font-size: 22px; color: #f9d38b; }
+.booster-status small { display: block; font-size: 10px; color: #94a3ae; }
+.booster-status.booster-activated { border-color: #b5ef7577; background: #b5ef750c; }
+.booster-status.booster-missed strong { color: #9ca8b1; }
+.cashout-button { width: 100%; margin-top: auto; min-height: 64px; font-size: 18px; background: var(--accent); }
+.cashout-button small { display: block; font-size: 11px; font-weight: 500; }
+.cashout-hint { font-size: 10px; margin: 13px 0 0; }
+.cashout-message { padding: 16px; border: 1px solid #b5ef7533; background: #b5ef7509; border-radius: 12px; margin: 0 0 20px; }
+.cashout-message strong { display: block; font-size: 16px; color: #c5ef9e; }
+.cashout-message span { display: block; font-size: 11px; color: #a2c38d; margin-top: 5px; }
+.cashout-message p { font-size: 12px; margin: 12px 0 4px; }
+.cashout-message small { font-size: 10px; color: #a0b1b8; }
+.scenario-banner { margin: 0 0 20px; border: 1px solid #f9d38b30; background: #f9d38b08; color: #dbc69f; border-radius: 12px; padding: 12px 18px; font-size: 12px; }
+.game-error { padding: 14px; border: 1px solid #ff9988; border-radius: 10px; margin: 15px 0; color: #ffc4bc; }
+.game-error .button { margin-left: 10px; padding: 8px 14px; font-size: 12px; }
+.demo-links { margin-top: 25px; color: #95a7b3; font-size: 11px; text-align: left; }
+.demo-links summary { cursor: pointer; display: list-item; width: fit-content; }
+.demo-links p { max-width: 650px; font-size: 11px; }
+.demo-links > div { display: flex; flex-wrap: wrap; gap: 10px; }
+.demo-links a { padding: 9px 13px; border: 1px solid #ffffff16; border-radius: 9px; text-decoration: none; color: #c4d0d4; background: #19242c; }
+.result-page { max-width: 760px; margin: 0 auto; text-align: center; background: radial-gradient(ellipse at 50% 0, #45633930, transparent 60%), #151e26; border: 1px solid #ffffff16; border-radius: 26px; padding: 32px 42px; }
+.result-loss { background: radial-gradient(ellipse at 50% 0, #87453130, transparent 60%), #151e26; }
+.result-symbol { color: #c5f191; font-size: 60px; line-height: 1.4; text-shadow: 0 0 50px #b5ef7544; }
+.result-loss .result-symbol { color: #ffa28b; }
+.result-page h1 { margin: 5px 0 10px; }
+.result-page > p { font-size: 12px; }
+.result-page > .eyebrow { font-size: 10px; }
+.result-amount { color: #b5ef75; font-weight: 800; font-size: 50px; line-height: 1.3; margin: 25px 0; font-variant-numeric: tabular-nums; }
+.result-loss .result-amount { color: #ffa28b; }
+.result-amount span { display: block; color: #a2b3b7; font-weight: 400; font-size: 11px; }
+.result-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; border-top: 1px solid #ffffff12; border-bottom: 1px solid #ffffff12; padding: 20px 0; }
+.result-stats dt { font-size: 10px; color: #99aab5; }
+.result-stats dd { margin: 5px 0 0; font-size: 20px; }
+.could-win { color: #c9d7c2; }
+.could-win strong { display: block; margin-top: 5px; font-size: 18px; color: #b5ef75; }
+.could-win small { display: block; margin-top: 5px; color: #9aabb2; font-size: 10px; }
+.reward-card { display: flex; gap: 20px; align-items: center; text-align: left; padding: 20px; background: #ffffff04; border: 1px solid #f9d38b24; border-radius: 15px; margin: 24px 0; }
+.reward-icon { font-size: 45px; }
+.reward-card h2 { font-size: 20px; margin: 7px 0 3px; }
+.reward-card h2 small { font-size: 11px; color: #b7c397; font-weight: 400; }
+.reward-card p { margin: 0; font-size: 11px; }
+.reward-card .eyebrow { color: #e3c58e; font-size: 9px; }
+.play-again { width: 100%; }
+.result-page .idle-countdown { font-size: 10px; margin: 15px 0 0; }
+@keyframes clouds-drift { to { transform: translateX(100px); } }
+@keyframes flight-sway { 0%,100% { rotate: -4deg; } 50% { rotate: 4deg; } }
+@keyframes points-rise { 0% { opacity: 0; transform: translateY(15px); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-40px); } }
+@keyframes booster-pop { 0% { opacity: 0; scale: .7; } 20%,70% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.1; } }
+@keyframes balloon-pop { 20% { scale: .75; opacity: 1; } 100% { scale: .1; opacity: 0; rotate: 40deg; } }
+@keyframes fragment-fly { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-140px) rotate(150deg); } }
+@keyframes sky-shake { 25% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-2px); } }
+@keyframes caption-appear { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 1000px) { .game-controls { padding: 25px; } .flight-stats > div { flex-wrap: wrap; } .game-panel { grid-template-columns: 1.1fr 1fr; } }
+@media (max-width: 760px) {
+  .game-heading { flex-wrap: wrap; gap: 0; }
+  .game-route { margin-bottom: 8px; }
+  .game-panel { grid-template-columns: 1fr; }
+  .game-sky { min-height: 420px; }
+  .flight-balloon.air-balloon { scale: .48; }
+  .flying-position { height: 115px; }
+  .game-controls { padding: 24px; }
+  .live-multiplier { font-size: 66px; }
+  .flight-stats > div { flex-wrap: nowrap; }
+  .cashout-button { position: sticky; bottom: 12px; z-index: 3; box-shadow: 0 8px 30px #0006; }
+  .result-page { padding: 25px 20px; }
+  .result-stats { grid-template-columns: repeat(2, 1fr); gap: 20px 10px; }
+  .result-amount { font-size: 42px; }
+  .reward-card { padding: 15px; gap: 14px; }
+  .reward-card h2 { font-size: 17px; }
+  .sky-label { left: 18px; right: 18px; }
+  .flight-level { left: 18px; right: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-page *, .game-page *::before { animation: none !important; transition: none !important; }
+  .sky-crashed .flight-balloon { opacity: 0; }
+  .sky-crashed .crash-burst { display: none; }
+}
+/* Keep the flight and its action visible on laptop and phone screens. */
+.app:has(.game-page) main { padding-top: 22px; padding-bottom: 22px; }
+.game-heading { margin-bottom: 14px; }
+.game-heading h1 { margin: 6px 0 10px; font-size: 34px; }
+.game-heading .eyebrow { margin: 0; }
+.game-sky { min-height: 500px; }
+.game-controls { padding: 24px 28px; }
+.live-multiplier { font-size: 65px; }
+.flight-motto { margin-bottom: 15px; }
+.flight-stats { gap: 10px; margin-bottom: 16px; }
+.flight-stats > div { padding-bottom: 8px; }
+.booster-status { margin-bottom: 16px; padding: 10px 12px; }
+.cashout-message { padding: 12px; margin-bottom: 14px; }
+.scenario-banner { padding: 9px 14px; margin-bottom: 14px; }
+@media (max-width: 760px) {
+  .app:has(.game-page) main { padding-top: 18px; padding-bottom: 95px; }
+  .game-heading h1 { font-size: 27px; }
+  .game-heading { align-items: flex-start; }
+  .game-route { font-size: 9px; padding: 7px 11px; }
+  .game-panel { display: flex; flex-direction: column; padding-bottom: 16px; }
+  .game-controls { display: contents; }
+  .game-controls > .eyebrow { order: 0; margin: 16px 0 0; text-align: center; font-size: 9px; }
+  .live-multiplier { order: 1; text-align: center; font-size: 54px; }
+  .game-sky { order: 2; min-height: 310px; height: 310px; margin: 12px; border-radius: 15px; }
+  .flight-motto { display: none; }
+  .flight-stats { order: 3; margin: 12px 20px; }
+  .booster-status { order: 4; margin: 0 20px 12px; }
+  .cashout-message { order: 5; margin: 0 20px 12px; }
+  .cashout-hint { order: 6; margin: 0 20px; text-align: center; }
+  .cashout-button { position: fixed; left: 20px; right: 20px; bottom: max(12px, env(safe-area-inset-bottom)); width: calc(100% - 40px); min-height: 58px; }
+  .game-sky .flight-balloon.air-balloon { scale: .38; }
+  .flying-position { height: 90px; }
+  .sky-label { top: 12px; font-size: 8px; }
+  .sky-bottom { font-size: 7px; left: 15px; right: 15px; }
+  .level-booster { font-size: 9px; padding: 2px 6px; }
+  .level-points { left: 75px; font-size: 22px; }
+}
