@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: air-balloon-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/airballoon}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+logging:
+  level:
+    root: INFO
+
+app:
+  allowed-origin-patterns: ${ALLOWED_ORIGIN_PATTERNS:http://localhost:*,http://127.0.0.1:*}
+  admin:
+    email: ${ADMIN_EMAIL:admin@admin.com}
+    password: ${ADMIN_PASSWORD:admin123}
+
+# ------------------------------------------------------------------
+# Статические параметры структуры. Управляемые параметры хранятся в game_settings
+# и редактируются через /admin.
+# ------------------------------------------------------------------
+
+# Количество визуальных уровней в теме.
+game:
+  greenLevels: 9
+  redLevels: 12
+
+# Общий аварийный предел; рабочие параметры модели находятся в game_settings.
+crash:
+  maxMultiplier: 100.0
+
+# Награда за завершённый раунд (по количеству пройденных уровней).
+reward:
+  commonMaxLevel: 3   # <= 3 уровня -> COMMON
+  rareMaxLevel: 6     # 4..6 уровней -> RARE, 7+ -> EPIC

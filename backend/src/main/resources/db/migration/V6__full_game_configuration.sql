@@ -1,0 +1,17 @@
+ALTER TABLE game_settings ADD COLUMN game_id VARCHAR(50) NOT NULL DEFAULT 'air-balloon-v1';
+ALTER TABLE game_settings ADD COLUMN game_name VARCHAR(100) NOT NULL DEFAULT 'Воздушный шар';
+ALTER TABLE game_settings ADD COLUMN game_type VARCHAR(30) NOT NULL DEFAULT 'CRASH';
+ALTER TABLE game_settings ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE game_settings ADD COLUMN crash_distribution VARCHAR(30) NOT NULL DEFAULT 'INVERSE_RTP';
+ALTER TABLE game_settings ADD COLUMN house_edge NUMERIC(8,6) NOT NULL DEFAULT 0.030000;
+ALTER TABLE game_settings ADD COLUMN min_crash_multiplier NUMERIC(10,2) NOT NULL DEFAULT 1.00;
+ALTER TABLE game_settings ADD COLUMN fps INTEGER NOT NULL DEFAULT 10;
+ALTER TABLE game_settings ADD COLUMN green_booster_probabilities VARCHAR(500) NOT NULL DEFAULT '1,1,1,1,1,1,1,1,1';
+ALTER TABLE game_settings ADD COLUMN red_booster_probabilities VARCHAR(600) NOT NULL DEFAULT '1,1,1,1,1,1,1,1,1,1,1,1';
+ALTER TABLE game_settings ADD COLUMN multiplier_tier_1_value NUMERIC(10,2) NOT NULL DEFAULT 1.00;
+ALTER TABLE game_settings ADD COLUMN multiplier_tier_2_value NUMERIC(10,2) NOT NULL DEFAULT 2.00;
+ALTER TABLE game_settings ADD COLUMN multiplier_tier_3_value NUMERIC(10,2) NOT NULL DEFAULT 3.00;
+ALTER TABLE game_settings ADD COLUMN multiplier_tier_4_value NUMERIC(10,2) NOT NULL DEFAULT 4.00;
+ALTER TABLE game_settings ADD COLUMN points_per_line INTEGER NOT NULL DEFAULT 10;
+ALTER TABLE game_settings ADD COLUMN points_cashout_bonus INTEGER NOT NULL DEFAULT 20;
+ALTER TABLE game_settings ADD COLUMN points_xn_bonus INTEGER NOT NULL DEFAULT 20;
