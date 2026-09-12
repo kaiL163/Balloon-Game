@@ -65,12 +65,12 @@ test('cashout disabled before level 1, locks payout, skips chest, accelerates to
   const result = await f.api.finishRound(r.id);
   assert.equal(result.outcome, 'win');
   assert.equal(result.payout, 640);
-  assert.equal(result.points, 90);
-  assert.equal((await f.api.getProfile()).gamePoints, 90);
+  assert.equal(result.points, 80);
+  assert.equal((await f.api.getProfile()).gamePoints, 80);
   assert.equal((await f.api.getProfile()).balance, 1240);
   await f.api.finishRound(r.id);
   assert.equal((await f.api.getHistory()).filter((item) => item.id === r.id).length, 1);
-  assert.equal((await f.api.getProfile()).gamePoints, 90);
+  assert.equal((await f.api.getProfile()).gamePoints, 80);
 });
 
 test('early crash loses stake; late cashout cannot win; reward and history saved', async () => {
@@ -105,13 +105,13 @@ test('win demo automatically cashes out and reaches crash with fixed payout', as
   assert.equal((await f.api.getProfile()).balance, 1060);
 });
 
-test('booster activates at level 2, jumps 2→6, awards 60 extra, auto cashout 6.45', async () => {
+test('booster activates without jumping flight coefficient, awards 60 extra, boosts cashout to 6.45', async () => {
   const f = fixture();
   const r = await f.api.startDemoRound('booster');
   f.advance(5000);
   const boosted = await f.api.advanceRound(r.id);
   assert.equal(boosted.boosterState, 'ACTIVATED');
-  assert.equal(boosted.multiplier, 6);
+  assert.equal(boosted.multiplier, 2);
   assert.equal(boosted.points, 80);
   f.advance(1000);
   const cash = await f.api.advanceRound(r.id);
@@ -120,7 +120,7 @@ test('booster activates at level 2, jumps 2→6, awards 60 extra, auto cashout 6
   f.advance(10000);
   const result = await f.api.finishRound(r.id);
   assert.equal(result.points, 90);
-  assert.equal(result.crashMultiplier, 8.4);
+  assert.equal(result.crashMultiplier, 2.8);
   assert.equal((await f.api.getProfile()).balance, 2362.5);
 });
 
@@ -133,7 +133,7 @@ test('cashout before demo booster permanently misses it', async () => {
   const next = await f.api.advanceRound(r.id);
   assert.equal(next.boosterState, 'MISSED');
   assert.equal(next.status, 'crashed');
-  assert.equal(next.points, 90);
+  assert.equal(next.points, 30);
   assert.equal(next.payout, 400);
 });
 
@@ -174,15 +174,25 @@ test('storage failure does not debit in-memory balance; returned objects are iso
   assert.equal((await f.api.getBetOptions())[0].amount, 100);
 });
 
-test('stake amount does not choose chest contents or flight risk', async () => {
-  for (const [random, booster] of [[0, 2], [0.5, 3], [0.999, 4]]) {
-    const small = await fixture(() => random).api.startRound('bet-100', 'GREEN');
-    const large = await fixture(() => random).api.startRound('bet-400', 'GREEN');
-    assert.equal(small.booster, booster);
-    assert.equal(large.booster, booster);
-    assert.equal(small.boosterLevel, large.boosterLevel);
-    assert.equal(small.crashMultiplier, large.crashMultiplier);
+test('each stake has a fixed booster and only boosted stakes get a chest', async () => {
+  for (const [betId, booster] of [['bet-100', 1], ['bet-150', 2], ['bet-250', 3], ['bet-400', 4]]) {
+    const round = await fixture(() => 0.5).api.startRound(betId, 'GREEN');
+    assert.equal(round.booster, booster);
+    if (booster === 1) assert.equal(round.boosterLevel, null);
+    else assert.ok(round.boosterLevel >= 2 && round.boosterLevel <= round.levels);
   }
+});
+
+test('booster size does not change the crash point', async () => {
+  const plain = await fixture(() => 0.6).api.startRound('bet-100', 'GREEN');
+  const boosted = await fixture(() => 0.6).api.startRound('bet-400', 'GREEN');
+  assert.equal(boosted.crashMultiplier, plain.crashMultiplier);
+});
+
+test('fixed booster can be placed on the final level', async () => {
+  const boosted = await fixture(() => 0.999).api.startRound('bet-400', 'GREEN');
+  assert.equal(boosted.booster, 4);
+  assert.equal(boosted.boosterLevel, boosted.levels);
 });
 
 test('cashout reaches crash within two seconds and survives reload without duplicate credits', async () => {

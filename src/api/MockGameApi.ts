@@ -25,10 +25,10 @@ export class MockGameApi implements GameApi {
   private now: () => number;
   private random: () => number;
   private readonly bets: BetOption[] = [
-    { id: 'bet-100', amount: 100, label: '100 бонусов' },
-    { id: 'bet-150', amount: 150, label: '150 бонусов' },
-    { id: 'bet-250', amount: 250, label: '250 бонусов' },
-    { id: 'bet-400', amount: 400, label: '400 бонусов' },
+    { id: 'bet-100', amount: 100, booster: 1, label: '100 бонусов' },
+    { id: 'bet-150', amount: 150, booster: 2, label: '150 бонусов' },
+    { id: 'bet-250', amount: 250, booster: 3, label: '250 бонусов' },
+    { id: 'bet-400', amount: 400, booster: 4, label: '400 бонусов' },
   ];
   private readonly themes: ThemeOption[] = [{ id: 'GREEN', levels: 9 }, { id: 'RED', levels: 12 }];
 
@@ -107,16 +107,16 @@ export class MockGameApi implements GameApi {
     if (!levels) throw new Error('Тема не найдена.');
     if (state.activeRound) throw new Error('Сначала завершите текущий раунд.');
     if (state.bonusBalance < bet.amount) throw new Error('Недостаточно бонусов.');
-    const booster = scenario === 'booster' ? 3 : scenario ? 1 : 1 + Math.floor(this.random() * 4);
-    const boosterLevel = booster === 1 ? null : scenario === 'booster' ? 2 : 2 + Math.floor(this.random() * (levels - 2));
-    const crashMultiplier = scenario === 'win' ? 3.2 : scenario === 'crash' ? 1.3 : scenario === 'booster' ? 8.4
-      : money(1.15 + this.random() * (1 + levels * 0.5 - 1.15) * booster);
+    const booster = bet.booster;
+    const boosterLevel = booster === 1 ? null : scenario === 'booster' ? 2 : 2 + Math.floor(this.random() * (levels - 1));
+    const crashMultiplier = scenario === 'win' ? 3.2 : scenario === 'crash' ? 1.3 : scenario === 'booster' ? 2.8
+      : money(1.15 + this.random() * (1 + levels * 0.5 - 1.15));
     const round: Round = {
       id: crypto.randomUUID(), bet: { ...bet }, theme, levels, booster, boosterLevel,
       boosterState: boosterLevel === null ? 'MISSED' : 'WAITING', crashMultiplier,
       status: 'active', startedAt: new Date(this.now()).toISOString(), lastTickAt: this.now(),
       baseMultiplier: 1, multiplier: 1, reachedLevel: 0, points: 0,
-      cashoutMultiplier: null, payout: 0, scenario,
+      cashoutMultiplier: null, cashoutBaseMultiplier: null, payout: 0, scenario,
     };
     state.bonusBalance = money(state.bonusBalance - bet.amount);
     state.theme = theme;

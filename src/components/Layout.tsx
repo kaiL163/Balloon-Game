@@ -1,8 +1,11 @@
+import { useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router';
+import { startInterfaceSounds } from '../utils/audio';
 
 export function Layout() {
   const { pathname } = useLocation();
   const isThemeSelect = pathname === '/';
+  useEffect(() => startInterfaceSounds(), []);
   /* Bet lobby uses :has(.bet-select) for full-bleed; header stays for in-game/result. */
 
   return (

@@ -43,7 +43,7 @@ export function ResultPage() {
     <p>{won ? 'Вы поймали свой момент. Бонусы уже на балансе.' : 'Ставка потеряна, но новая высота ещё впереди.'}</p>
     <div className="result-amount">{won ? number.format(result.payout) : `−${number.format(result.bet)}`}<span>{won ? 'бонусов · ваш выигрыш' : 'бонусов · потерянная ставка'}</span></div>
     <dl className="result-stats"><div><dt>Ставка</dt><dd>{number.format(result.bet)}</dd></div><div><dt>Cashout</dt><dd>{result.cashoutMultiplier === null ? '—' : `${result.cashoutMultiplier.toFixed(2)}x`}</dd></div><div><dt>Crash</dt><dd>{result.crashMultiplier.toFixed(2)}x</dd></div><div><dt>Игровые очки</dt><dd>+{result.points}</dd></div></dl>
-    {won && <p className="could-win">Могли бы забрать больше <strong>до {number.format(result.bet * result.crashMultiplier)} бонусов</strong><small>Теоретически перед crash · выплата зафиксирована на cashout</small></p>}
+    {won && <p className="could-win">Могли бы забрать больше <strong>до {number.format(result.bet * result.crashMultiplier * (result.boosterState === 'ACTIVATED' ? result.booster : 1))} бонусов</strong><small>Теоретически перед crash · выплата зафиксирована на cashout</small></p>}
     <RewardCard reward={result.reward} />
     <button className="button play-again" onClick={playAgain}>Играть снова ↗</button>
     <p className="idle-countdown">Вернёмся к выбору ставки через {seconds} сек. бездействия</p>

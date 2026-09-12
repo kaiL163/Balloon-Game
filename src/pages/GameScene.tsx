@@ -12,7 +12,7 @@ import { RulesModal } from '../components/RulesModal';
 import { useFlight } from '../hooks/useFlight';
 import { useIdleReturn } from '../hooks/useIdleReturn';
 import type { BetOption, DemoScenario, GameResult, Theme, ThemeOption, UserProfile } from '../types';
-import { startBirdAmbience } from '../utils/audio';
+import { playBetSelection, playLaunch, playResult, prepareGameAudio, startBirdAmbience } from '../utils/audio';
 import { makeBalloonMotion, makeSkyVisit } from '../utils/skyDrift';
 import landscapeUrl from '../assets/theme-select-landscape.png';
 import '../styles/bet.css';
@@ -49,6 +49,7 @@ export function GameScene() {
   const [portalReady, setPortalReady] = useState(false);
   const [visit] = useState(() => Math.random());
   const submitting = useRef(false);
+  const soundedResult = useRef<string | null>(null);
   const isResult = location.pathname.startsWith('/result');
   const resultRoundId = params.get('round') ?? undefined;
   const mode = isResult ? 'RESULT' : round ? 'IN_GAME' : 'PRE_GAME';
@@ -84,6 +85,11 @@ export function GameScene() {
     if (mode !== 'PRE_GAME') return;
     return startBirdAmbience();
   }, [mode, visit]);
+  useEffect(() => {
+    if (!result || soundedResult.current === result.roundId) return;
+    soundedResult.current = result.roundId;
+    playResult(result.outcome);
+  }, [result]);
 
   const backToLobby = useCallback(() => {
     navigate('/bet', { replace: true, state: { theme } });
@@ -102,6 +108,8 @@ export function GameScene() {
 
   async function start() {
     if (!canStart || !selectedBet || submitting.current) return;
+    prepareGameAudio();
+    playLaunch();
     submitting.current = true;
     setStarting(true);
     setError('');
@@ -194,7 +202,7 @@ export function GameScene() {
             <button type="button" onClick={() => setModal('history')} aria-haspopup="dialog"><span aria-hidden="true">↺</span> История</button>
           </div>
 
-<div className="bet-chest-note"><BoosterChest /><div><strong>Сундук с бустером</strong><small>Случайный x2, x3 или x4 на маршруте.<br />Не зависит от суммы ставки.</small></div></div>
+<div className="bet-chest-note"><BoosterChest /><div><strong>Чем выше ставка, тем сильнее бустер</strong><small>100 — без бустера, 150 — ×2,<br />250 — ×3, 400 — ×4.</small></div></div>
           <fieldset disabled={starting}>
             <legend>Выберите ставку <small>в бонусах</small></legend>
             <div className="bet-puzzle-grid">
@@ -214,12 +222,12 @@ export function GameScene() {
                       name="bet"
                       checked={selectedId === bet.id}
                       disabled={unavailable}
-                      onChange={() => setSelectedId(bet.id)}
+                      onChange={() => { playBetSelection(); setSelectedId(bet.id); }}
                     />
                     {selectedId === bet.id && <i className="puzzle-check" aria-hidden="true">✓</i>}
 
                     <strong>{bet.amount}</strong>
-                    <small>{unavailable ? 'мало бонусов' : 'бонусов'}</small>
+                    <small>{unavailable ? 'мало бонусов' : bet.booster === 1 ? 'без бустера' : `бустер ×${bet.booster}`}</small>
                   </label>
                 );
               })}

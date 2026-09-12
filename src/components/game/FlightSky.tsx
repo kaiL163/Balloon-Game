@@ -1,10 +1,26 @@
+import { useEffect, useRef } from 'react';
 import type { Round } from '../../types';
 import { useFlash } from '../../hooks/useFlash';
+import { playBoosterActivation, playCashout, playCrash, playLevelReached } from '../../utils/audio';
 import { LevelTrack } from './LevelTrack';
 
 export function FlightSky({ round }: { round: Round }) {
   const levelFlash = useFlash(round.reachedLevel);
   const boosterFlash = useFlash(round.boosterState, 1500);
+  const previous = useRef({
+    level: round.reachedLevel,
+    boosterState: round.boosterState,
+    cashoutMultiplier: round.cashoutMultiplier,
+    status: round.status,
+  });
+  useEffect(() => {
+    const last = previous.current;
+    if (last.status !== 'crashed' && round.status === 'crashed') playCrash();
+    else if (last.cashoutMultiplier === null && round.cashoutMultiplier !== null) playCashout();
+    else if (last.boosterState === 'WAITING' && round.boosterState === 'ACTIVATED') playBoosterActivation();
+    else if (round.reachedLevel > last.level) playLevelReached();
+    previous.current = { level: round.reachedLevel, boosterState: round.boosterState, cashoutMultiplier: round.cashoutMultiplier, status: round.status };
+  }, [round.reachedLevel, round.boosterState, round.cashoutMultiplier, round.status]);
   const crashed = round.status === 'crashed';
   const height = Math.min(1, (round.baseMultiplier - 1) / (round.levels * 0.5));
   return <div className={`game-sky scene-${round.theme.toLowerCase()} ${crashed ? 'sky-crashed' : round.status === 'cashed_out' ? 'sky-fast-forward' : ''}`}>

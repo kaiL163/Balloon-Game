@@ -1,7 +1,7 @@
-import type { HistoryItem, Theme } from '../types';
+import type { BoosterMultiplier, HistoryItem, Theme } from '../types';
 
 // Примеры для истории. Не участвуют в балансе и чередовании новых раундов.
-const examples: { theme: Theme; amount: number; booster: number; cashout: number | null; crash: number; points: number }[] = [
+const examples: { theme: Theme; amount: number; booster: BoosterMultiplier; cashout: number | null; crash: number; points: number }[] = [
   { theme: 'GREEN', amount: 150, booster: 2, cashout: 2.4, crash: 3.85, points: 240 },
   { theme: 'RED', amount: 400, booster: 4, cashout: null, crash: 1.32, points: 0 },
   { theme: 'RED', amount: 250, booster: 3, cashout: 3.1, crash: 4.6, points: 465 },
@@ -17,13 +17,14 @@ export const mockHistory: HistoryItem[] = examples.map((entry, index) => {
     id,
     round: {
       id, theme: entry.theme, levels: entry.theme === 'GREEN' ? 9 : 12,
-      bet: { id: `bet-${entry.amount}`, amount: entry.amount, label: `${entry.amount} бонусов` },
+      bet: { id: `bet-${entry.amount}`, amount: entry.amount, booster: entry.booster, label: `${entry.amount} бонусов` },
       status: 'finished', startedAt,
       booster: entry.booster, boosterLevel: entry.booster > 1 ? 2 : null,
       boosterState: entry.booster > 1 && entry.cashout !== null ? 'ACTIVATED' : 'MISSED',
       crashMultiplier: entry.crash, lastTickAt: Date.parse(startedAt),
       baseMultiplier: entry.crash, multiplier: entry.crash, reachedLevel: 0,
       points: entry.points, cashoutMultiplier: entry.cashout,
+      cashoutBaseMultiplier: entry.cashout === null ? null : entry.cashout / (entry.booster > 1 ? entry.booster : 1),
       payout: Math.round(entry.amount * (entry.cashout ?? 0)), scenario: null,
     },
     result: {

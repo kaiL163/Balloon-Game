@@ -44,6 +44,106 @@ export function playWaterDrop() {
   } catch { /* Audio may be blocked until a user gesture; selection still proceeds. */ }
 }
 
+/** Call from a click so later in-flight effects are allowed to play. */
+export function prepareGameAudio() {
+  try { context(); } catch { /* The game remains fully usable without audio. */ }
+}
+
+export function playUiClick() {
+  try {
+    const ctx = context();
+    tone(ctx, ctx.currentTime, 0.06, 520, 'sine', 0.025, 420);
+  } catch { /* UI actions never depend on audio. */ }
+}
+
+export function playBetSelection() {
+  try {
+    const ctx = context();
+    const start = ctx.currentTime;
+    tone(ctx, start, 0.09, 330, 'triangle', 0.055, 440);
+    tone(ctx, start + 0.05, 0.12, 550, 'sine', 0.045, 660);
+  } catch { /* UI actions never depend on audio. */ }
+}
+
+export function playLaunch() {
+  try {
+    const ctx = context();
+    const start = ctx.currentTime;
+    importantUntil = Math.max(importantUntil, performance.now() + 1100);
+    tone(ctx, start, 0.5, 110, 'sine', 0.09, 440);
+    tone(ctx, start + 0.14, 0.55, 220, 'triangle', 0.07, 880);
+  } catch { /* The flight still starts if audio is unavailable. */ }
+}
+
+export function playLevelReached() {
+  try {
+    const ctx = context();
+    const start = ctx.currentTime;
+    tone(ctx, start, 0.12, 660, 'sine', 0.06, 790);
+    tone(ctx, start + 0.07, 0.16, 880, 'triangle', 0.045, 990);
+  } catch { /* Level progress remains visible. */ }
+}
+
+/** Bright reward chord played when a route booster opens. */
+export function playBoosterActivation() {
+  try {
+    const ctx = context();
+    const start = ctx.currentTime;
+    importantUntil = Math.max(importantUntil, performance.now() + 900);
+    tone(ctx, start, 0.28, 440, 'triangle', 0.14, 880);
+    tone(ctx, start + 0.08, 0.34, 660, 'sine', 0.11, 1320);
+    tone(ctx, start + 0.16, 0.42, 880, 'sine', 0.09, 1760);
+  } catch { /* Audio can remain blocked; the visual activation still plays. */ }
+}
+
+export function playCashout() {
+  try {
+    const ctx = context();
+    const start = ctx.currentTime;
+    importantUntil = Math.max(importantUntil, performance.now() + 900);
+    tone(ctx, start, 0.18, 523, 'triangle', 0.1, 659);
+    tone(ctx, start + 0.1, 0.22, 659, 'triangle', 0.09, 784);
+    tone(ctx, start + 0.2, 0.3, 784, 'sine', 0.075, 1047);
+  } catch { /* Cashout remains confirmed visually. */ }
+}
+
+export function playCrash() {
+  try {
+    const ctx = context();
+    const start = ctx.currentTime;
+    importantUntil = Math.max(importantUntil, performance.now() + 1200);
+    tone(ctx, start, 0.42, 180, 'sawtooth', 0.11, 45);
+    tone(ctx, start + 0.03, 0.28, 95, 'square', 0.055, 30);
+  } catch { /* Crash remains visible. */ }
+}
+
+export function playResult(outcome: 'win' | 'loss') {
+  try {
+    const ctx = context();
+    const start = ctx.currentTime;
+    importantUntil = Math.max(importantUntil, performance.now() + 1000);
+    if (outcome === 'win') {
+      tone(ctx, start, 0.2, 523, 'triangle', 0.07, 659);
+      tone(ctx, start + 0.13, 0.24, 659, 'triangle', 0.07, 784);
+      tone(ctx, start + 0.26, 0.4, 784, 'sine', 0.075, 1047);
+    } else {
+      tone(ctx, start, 0.3, 294, 'triangle', 0.055, 220);
+      tone(ctx, start + 0.16, 0.36, 220, 'sine', 0.045, 147);
+    }
+  } catch { /* Results remain visible. */ }
+}
+
+/** Quiet feedback for buttons and links across every route. */
+export function startInterfaceSounds(): () => void {
+  const onClick = (event: MouseEvent) => {
+    const target = event.target instanceof Element ? event.target.closest('button, a, [role="button"]') : null;
+    if (!target || target.matches(':disabled, [aria-disabled="true"]')) return;
+    playUiClick();
+  };
+  document.addEventListener('click', onClick);
+  return () => document.removeEventListener('click', onClick);
+}
+
 function birdChirpA(ctx: AudioContext, at: number) {
   tone(ctx, at, 0.09, 2100, 'triangle', 0.08, 2600);
   tone(ctx, at + 0.1, 0.08, 2400, 'triangle', 0.07, 1900);
