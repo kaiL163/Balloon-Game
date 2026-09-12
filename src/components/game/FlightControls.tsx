@@ -25,8 +25,16 @@ export function FlightControls({ round, pending, onCashout }: { round: Round; pe
     {cashedOut && <div className="cashout-message" role="status"><strong>Вы забрали {number.format(round.payout)} бонусов</strong><span>Зафиксировано на {round.cashoutMultiplier?.toFixed(2)}x</span><small>Ускоряем полёт до финала. Ваш выигрыш не изменится.</small></div>}
     <div className="cashout-action">
     <CashoutOnboarding key={round.id} active={round.status === 'active' && !cashedOut} />
-    <button className="button cashout-button" onClick={onCashout} disabled={pending || crashed || cashedOut || round.reachedLevel < 1}>
-      {pending ? 'Фиксируем…' : crashed ? 'Полёт завершён' : cashedOut ? 'Выигрыш зафиксирован ✓' : round.reachedLevel < 1 ? 'Ждём первый уровень' : 'Забрать'}
+    <button
+      className={[
+        'button cashout-button',
+        cashedOut ? 'is-cashed-out' : '',
+        !cashedOut && !crashed && !pending && round.reachedLevel < 1 ? 'is-waiting-level' : '',
+      ].filter(Boolean).join(' ')}
+      onClick={onCashout}
+      disabled={pending || crashed || cashedOut || round.reachedLevel < 1}
+    >
+      {pending ? 'Фиксируем…' : crashed ? 'Полёт завершён' : cashedOut ? 'Выигрыш зафиксирован' : round.reachedLevel < 1 ? 'Ждём первый уровень' : 'Забрать'}
       {!cashedOut && !crashed && round.reachedLevel > 0 && <small>{number.format(potential)} бонусов</small>}
     </button>
     </div>

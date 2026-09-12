@@ -456,3 +456,252 @@ html,body,#root {
     min-height:470px !important;
   }
 }
+
+/* In-flight: reuse bet-select forest backdrop edge-to-edge; glass score panel. */
+html:has(.mode-in_game),
+body:has(.mode-in_game),
+#root:has(.mode-in_game) {
+  background: transparent !important;
+}
+
+#root:has(.mode-in_game) {
+  position: relative;
+  z-index: 1;
+}
+
+.app:has(.mode-in_game) {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  background: transparent !important;
+}
+
+.app:has(.mode-in_game) > header.header {
+  display: none !important;
+}
+
+.app:has(.mode-in_game) > main {
+  background: transparent !important;
+  min-height: 100dvh;
+  height: 100dvh;
+  padding: 0 clamp(16px, 3vw, 40px) 24px !important;
+}
+
+.unified-scene.mode-in_game {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  min-height: 100dvh;
+}
+
+.mode-in_game .flight-side {
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.58);
+  -webkit-backdrop-filter: blur(14px) saturate(1.18);
+  backdrop-filter: blur(14px) saturate(1.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12),
+    0 14px 36px rgba(8, 24, 36, 0.28);
+  color: #34566c;
+}
+
+.unified-scene.mode-in_game.theme-red .flight-side {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 247, 242, 0.64),
+    rgba(255, 227, 216, 0.54)
+  );
+}
+
+.unified-scene.mode-in_game.theme-green .flight-side {
+  background: linear-gradient(
+    180deg,
+    rgba(244, 255, 239, 0.64),
+    rgba(223, 245, 208, 0.54)
+  );
+}
+
+.mode-in_game .flight-side .game-controls,
+.mode-in_game .flight-side .game-controls p,
+.mode-in_game .flight-side .flight-stats dd {
+  color: #34566c;
+}
+
+.mode-in_game .flight-side .eyebrow {
+  color: #997020;
+}
+
+.mode-in_game .flight-side .flight-motto,
+.mode-in_game .flight-side .flight-stats dt,
+.mode-in_game .flight-side .cashout-hint,
+.mode-in_game .flight-side .booster-status small,
+.mode-in_game .flight-side .flight-stats dd small {
+  color: #547384;
+}
+
+.mode-in_game .flight-side .points-value,
+.mode-in_game .flight-side .booster-status strong {
+  color: #986218;
+}
+
+.mode-in_game .flight-side .flight-stats > div {
+  border-bottom-color: rgba(52, 86, 108, 0.12);
+}
+
+.mode-in_game .flight-side .booster-status {
+  background: rgba(255, 255, 255, 0.45);
+  border-color: rgba(231, 201, 118, 0.55);
+}
+
+.mode-in_game .scene-cloud {
+  width: 110px;
+  height: 26px;
+  opacity: 0.28;
+  filter: blur(1.5px);
+}
+
+.mode-in_game .scene-cloud:before {
+  width: 42px;
+  height: 34px;
+  left: 16px;
+}
+
+.mode-in_game .scene-cloud:after {
+  width: 32px;
+  height: 28px;
+  right: 10px;
+}
+
+.mode-in_game .cloud-b {
+  transform: scale(1.05);
+}
+
+.mode-in_game .cloud-c {
+  transform: scale(0.7);
+  opacity: 0.2;
+}
+
+.mode-in_game .active-world .flight-level,
+.mode-in_game .active-world .level-number,
+.mode-in_game .active-world .level-value {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.mode-in_game .active-world .level-passed {
+  color: #e8ffb8;
+}
+
+.mode-in_game .active-world .level-line {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.mode-in_game .active-world .level-passed .level-line {
+  border-color: rgba(181, 239, 117, 0.55);
+}
+
+.mode-in_game .active-world .sky-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.mode-in_game .active-world .sky-cloud {
+  width: 140px;
+  height: 42px;
+  opacity: 0.35;
+}
+
+.mode-in_game .active-world .sky-cloud-one {
+  top: 18%;
+  left: 8%;
+}
+
+.mode-in_game .active-world .sky-cloud-two {
+  bottom: 14%;
+  right: -12px;
+  opacity: 0.28;
+}
+
+.mode-in_game .scene-title > span {
+  display: none;
+}
+
+.mode-in_game .scene-title h1 {
+  color: #fffef8;
+  text-shadow:
+    0 3px 0 #2f7eb0,
+    0 6px 14px rgba(28, 90, 140, 0.45);
+}
+
+.mode-in_game .scene-title h1 em {
+  color: #b6f29d;
+  text-shadow:
+    0 3px 0 #3f7c2c,
+    0 6px 14px rgba(50, 110, 35, 0.4);
+}
+
+.mode-in_game.theme-red .scene-title h1 em {
+  color: #ffa69e;
+  text-shadow:
+    0 3px 0 #b04a42,
+    0 6px 14px rgba(140, 45, 35, 0.4);
+}
+
+.mode-in_game.theme-green .scene-title h1 em {
+  color: #b6f29d;
+  text-shadow:
+    0 3px 0 #3f7c2c,
+    0 6px 14px rgba(50, 110, 35, 0.4);
+}
+
+.mode-in_game .flight-side .cashout-button {
+  width: 100%;
+  min-height: 56px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 18px;
+  padding: 14px 18px;
+  font-size: 18px;
+  font-weight: 850;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #2a4a18;
+  background: linear-gradient(180deg, #d8f58a, #b5ef75);
+  box-shadow: 0 8px 0 rgba(72, 110, 40, 0.35), 0 14px 28px rgba(20, 50, 30, 0.2);
+  transition: filter 0.2s ease, transform 0.2s ease, margin-top 0.2s ease;
+}
+
+.mode-in_game .flight-side .cashout-button small {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(42, 74, 24, 0.78);
+}
+
+.mode-in_game .flight-side .cashout-button:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.mode-in_game .flight-side .cashout-button:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
+.mode-in_game .flight-side .cashout-button.is-cashed-out,
+.mode-in_game .flight-side .cashout-button.is-cashed-out:disabled,
+.mode-in_game .flight-side .cashout-button.is-waiting-level,
+.mode-in_game .flight-side .cashout-button.is-waiting-level:disabled {
+  margin-top: 18px;
+  opacity: 1;
+  cursor: default;
+  color: #e8f4ff;
+  background: linear-gradient(180deg, #3a6f9a, #1e4a72);
+  box-shadow: 0 8px 0 rgba(18, 48, 78, 0.45), 0 14px 28px rgba(12, 36, 60, 0.28);
+  filter: none;
+  transform: none;
+}

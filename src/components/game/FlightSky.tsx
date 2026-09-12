@@ -36,6 +36,10 @@ export function FlightSky({ round }: { round: Round }) {
     </div>
     {boosterFlash && round.boosterState === 'ACTIVATED' && <div className="booster-flash" role="status">⚡ BOOST x{round.booster}<small>+{round.booster * 20} очков</small></div>}
     {crashed && <div className="crash-caption" role="status">Шар лопнул<span>{round.crashMultiplier.toFixed(2)}x</span></div>}
-    <div className="sky-bottom">{crashed ? 'ПОЛЁТ ЗАВЕРШЁН' : round.status === 'cashed_out' ? 'УСКОРЯЕМ ПОЛЁТ · ВЫИГРЫШ ЗАФИКСИРОВАН' : 'НАБИРАЕМ ВЫСОТУ'}<span>+10 очков за уровень</span></div>
+    {(crashed || round.status === 'cashed_out') && (
+      <div className="sky-bottom">
+        {crashed ? 'ПОЛЁТ ЗАВЕРШЁН' : 'УСКОРЯЕМ ПОЛЁТ · ВЫИГРЫШ ЗАФИКСИРОВАН'}
+      </div>
+    )}
   </div>;
 }

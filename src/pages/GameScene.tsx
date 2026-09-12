@@ -286,11 +286,23 @@ export function GameScene() {
     );
   }
 
+  const forestBackdrop = (
+    <div
+      className="bet-select-backdrop theme-select-backdrop"
+      aria-hidden="true"
+      style={{ backgroundImage: `url(${landscapeUrl})` }}
+    />
+  );
+
   return <section className={`unified-scene mode-${mode.toLowerCase()} theme-${(round?.theme ?? theme).toLowerCase()} ${starting ? 'is-launching' : ''} ${round?.status === 'crashed' && !isResult ? 'is-ending' : ''}`}>
+    {mode === 'IN_GAME' && (portalReady ? createPortal(forestBackdrop, document.body) : forestBackdrop)}
     <div className="scene-cloud cloud-a" /><div className="scene-cloud cloud-b" /><div className="scene-cloud cloud-c" />
     <div className="scene-topbar">
-      <div className="scene-title"><span>{mode === 'IN_GAME' ? 'ВЫ УЖЕ В НЕБЕ' : 'ПОЛЁТ ЗАВЕРШЁН'}</span><h1>{mode === 'IN_GAME' ? <>Лети выше.<br /><em>Забери вовремя!</em></> : <>Как прошёл<br /><em>ваш полёт?</em></>}</h1></div>
-      {createPortal(<div className="scene-actions">
+      <div className="scene-title">
+        {mode !== 'IN_GAME' && <span>ПОЛЁТ ЗАВЕРШЁН</span>}
+        <h1>{mode === 'IN_GAME' ? <>Лети выше.<br /><em>Забери вовремя!</em></> : <>Как прошёл<br /><em>ваш полёт?</em></>}</h1>
+      </div>
+      {mode !== 'IN_GAME' && createPortal(<div className="scene-actions">
         <button onClick={() => setModal('rules')}><b>?</b><span>Правила</span></button>
         <button onClick={() => setModal('history')}><b>↺</b><span>История</span></button>
         <div className="scene-balance"><i>★</i><span>Баланс<small>{(data?.profile.balance ?? 0).toLocaleString('ru-RU')} бонусов</small></span></div>
@@ -305,7 +317,7 @@ export function GameScene() {
 
       {mode === 'IN_GAME' && round && <div className="flight-side"><FlightControls round={round} pending={pending} onCashout={cashout} />{round.scenario && <p className="scenario-banner">Демо · {scenarioLabels[round.scenario]}</p>}{flightError && <div className="game-error">{flightError} <button onClick={retry}>Повторить</button></div>}</div>}
     </div>
-    <div className="scene-footer"><span>★ +10 очков за каждый уровень</span><span>Следи за высотой и забирай бонусы вовремя</span></div>
+    {mode !== 'IN_GAME' && <div className="scene-footer"><span>★ +10 очков за каждый уровень</span><span>Следи за высотой и забирай бонусы вовремя</span></div>}
     {modal === 'rules' && <RulesModal onClose={() => setModal(null)} />}
     {modal === 'history' && <HistoryModal onClose={() => setModal(null)} />}
   </section>;
