@@ -107,11 +107,11 @@
 .could-win strong { display: block; margin-top: 5px; font-size: 18px; color: #b5ef75; }
 .could-win small { display: block; margin-top: 5px; color: #9aabb2; font-size: 10px; }
 .reward-card { display: flex; gap: 20px; align-items: center; text-align: left; padding: 20px; background: #ffffff04; border: 1px solid #f9d38b24; border-radius: 15px; margin: 24px 0; }
-.reward-icon { font-size: 45px; }
-.reward-card h2 { font-size: 20px; margin: 7px 0 3px; }
-.reward-card h2 small { font-size: 11px; color: #b7c397; font-weight: 400; }
-.reward-card p { margin: 0; font-size: 11px; }
-.reward-card .eyebrow { color: #e3c58e; font-size: 9px; }
+.reward-icon { width: 72px; height: 72px; object-fit: cover; border-radius: 16px; flex-shrink: 0; font-size: 45px; }
+.reward-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; text-align: left; }
+.reward-card h2 { font-size: 20px; margin: 0; line-height: 1.2; text-align: left; }
+.reward-card p { margin: 2px 0 0; font-size: 11px; line-height: 1.3; text-align: left; }
+.reward-card .eyebrow { display: block; margin: 0; color: #1a3d52; font-size: 9px; font-weight: 800; letter-spacing: 0.8px; line-height: 1.2; }
 .play-again { width: 100%; }
 .result-page .idle-countdown { font-size: 10px; margin: 15px 0 0; }
 @keyframes clouds-drift { to { transform: translateX(100px); } }
@@ -139,6 +139,7 @@
   .result-amount { font-size: 42px; }
   .reward-card { padding: 15px; gap: 14px; }
   .reward-card h2 { font-size: 17px; }
+  .reward-icon { width: 56px; height: 56px; }
   .sky-label { left: 18px; right: 18px; }
   .flight-level { left: 18px; right: 18px; }
 }

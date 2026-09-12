@@ -1,9 +1,26 @@
 import type { Reward } from '../../types';
-const rewards: Record<Reward, { icon: string; title: string }> = {
-  Balloon: { icon: '🎈', title: 'Воздушный шар' }, Cloud: { icon: '☁️', title: 'Облако' },
-  Bird: { icon: '🕊️', title: 'Птица' }, Trophy: { icon: '🏆', title: 'Кубок' },
+import balloonUrl from '../../assets/rewards/reward-balloon.png';
+import cloudUrl from '../../assets/rewards/reward-cloud.png';
+import birdUrl from '../../assets/rewards/reward-bird.png';
+import trophyUrl from '../../assets/rewards/reward-trophy.png';
+
+const rewards: Record<Reward, { image: string; title: string }> = {
+  Balloon: { image: balloonUrl, title: 'Воздушный шар' },
+  Cloud: { image: cloudUrl, title: 'Облако' },
+  Bird: { image: birdUrl, title: 'Птица' },
+  Trophy: { image: trophyUrl, title: 'Кубок' },
 };
+
 export function RewardCard({ reward }: { reward: Reward }) {
   const item = rewards[reward];
-  return <div className="reward-card"><span className="reward-icon" aria-hidden="true">{item.icon}</span><div><span className="eyebrow">Дополнительная награда</span><h2>{item.title} <small>{reward}</small></h2><p>Ваш сувенир за этот полёт</p></div></div>;
+  return (
+    <div className="reward-card">
+      <img className="reward-icon" src={item.image} alt="" width={72} height={72} />
+      <div className="reward-copy">
+        <span className="eyebrow">Дополнительная награда</span>
+        <h2>{item.title}</h2>
+        <p>Ваш сувенир за этот полёт</p>
+      </div>
+    </div>
+  );
 }

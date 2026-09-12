@@ -10,7 +10,6 @@ import { RewardCard } from '../components/game/RewardCard';
 import { HistoryModal } from '../components/HistoryModal';
 import { RulesModal } from '../components/RulesModal';
 import { useFlight } from '../hooks/useFlight';
-import { useIdleReturn } from '../hooks/useIdleReturn';
 import type { BetOption, DemoScenario, GameResult, HistoryItem, Theme, ThemeOption, UserProfile } from '../types';
 import { playBetSelection, playLaunch, playResult, prepareGameAudio, startBirdAmbience } from '../utils/audio';
 import { makeBalloonMotion, makeSkyVisit } from '../utils/skyDrift';
@@ -27,6 +26,7 @@ const coefficient = (value: number | null) => value === null ? '—' : `${value.
 const crashColor = (value: number) => value < 2 ? 'red' : value < 5 ? 'gold' : value < 10 ? 'blue' : 'green';
 const scenarioLabels = { win: 'Авто-cashout на 1.60x', crash: 'Ранний crash на 1.30x', booster: 'Бустер x3 на уровне 2' };
 const themeLabel = (theme: Theme) => theme === 'RED' ? 'Красный шар' : 'Зелёный шар';
+const RESULT_RETURN_SECONDS = 60;
 
 function readNavTheme(state: unknown): Theme | null {
   const theme = (state as { theme?: Theme } | null)?.theme;
@@ -84,7 +84,7 @@ export function GameScene() {
   }, [isResult, resultRoundId]);
   useEffect(() => setPortalReady(true), []);
   useEffect(() => {
-    if (mode !== 'PRE_GAME') return;
+    if (mode !== 'PRE_GAME' && mode !== 'RESULT') return;
     return startBirdAmbience();
   }, [mode, visit]);
   useEffect(() => {
@@ -92,18 +92,31 @@ export function GameScene() {
     soundedResult.current = result.roundId;
     playResult(result.outcome);
   }, [result]);
+  useEffect(() => {
+    if (result?.theme === 'RED' || result?.theme === 'GREEN') setTheme(result.theme);
+  }, [result]);
 
-  const backToLobby = useCallback(() => {
-    navigate('/bet', { replace: true, state: { theme } });
-    setResult(null);
-    setSelectedId(null);
-    retry();
-    loadLobby().catch(() => undefined);
-  }, [navigate, retry, loadLobby, theme]);
   const playAgain = useCallback(() => {
     navigate('/', { replace: true });
   }, [navigate]);
-  const seconds = useIdleReturn(backToLobby, !!result && isResult);
+  const [seconds, setSeconds] = useState(RESULT_RETURN_SECONDS);
+  useEffect(() => {
+    if (!result || !isResult) {
+      setSeconds(RESULT_RETURN_SECONDS);
+      return;
+    }
+    const startedAt = Date.now();
+    setSeconds(RESULT_RETURN_SECONDS);
+    const timer = window.setInterval(() => {
+      const remaining = Math.max(0, Math.ceil(RESULT_RETURN_SECONDS - (Date.now() - startedAt) / 1000));
+      setSeconds(remaining);
+      if (remaining === 0) {
+        window.clearInterval(timer);
+        navigate('/', { replace: true });
+      }
+    }, 250);
+    return () => window.clearInterval(timer);
+  }, [result, isResult, navigate]);
   const selectedBet = data?.bets.find((bet) => bet.id === selectedId);
   const selectedTheme = data?.themes.find((option) => option.id === theme);
   const canStart = !!data && !!selectedBet && selectedBet.amount <= data.profile.balance && !starting && !round;
@@ -293,20 +306,54 @@ export function GameScene() {
       style={{ backgroundImage: `url(${landscapeUrl})` }}
     />
   );
+  const activeTheme = (result?.theme ?? round?.theme ?? theme).toLowerCase();
 
-  return <section className={`unified-scene mode-${mode.toLowerCase()} theme-${(round?.theme ?? theme).toLowerCase()} ${starting ? 'is-launching' : ''} ${round?.status === 'crashed' && !isResult ? 'is-ending' : ''}`}>
-    {mode === 'IN_GAME' && (portalReady ? createPortal(forestBackdrop, document.body) : forestBackdrop)}
-    <div className="scene-cloud cloud-a" /><div className="scene-cloud cloud-b" /><div className="scene-cloud cloud-c" />
+  return <section className={`unified-scene mode-${mode.toLowerCase()} theme-${activeTheme} ${starting ? 'is-launching' : ''} ${round?.status === 'crashed' && !isResult ? 'is-ending' : ''}`}>
+    {(mode === 'IN_GAME' || mode === 'RESULT') && (portalReady ? createPortal(forestBackdrop, document.body) : forestBackdrop)}
+    {mode === 'RESULT' ? (
+      <div className="theme-sky" aria-hidden="true">
+        {sky.clouds.map((cloud) => (
+          <span
+            key={cloud.id}
+            className="theme-drift-cloud"
+            style={{
+              top: `${cloud.top}%`,
+              left: `${cloud.left}%`,
+              '--scale': cloud.scale * 0.55,
+              '--duration': `${cloud.duration}s`,
+              '--delay': `${cloud.delay}s`,
+              '--dx': `${cloud.driftX}px`,
+              '--dy': `${cloud.driftY}px`,
+            } as CSSProperties}
+          />
+        ))}
+        {sky.birds.map((bird) => (
+          <span
+            key={bird.id}
+            className="theme-drift-bird"
+            style={{
+              top: `${bird.top}%`,
+              left: `${bird.left}%`,
+              '--scale': bird.scale,
+              '--duration': `${bird.duration}s`,
+              '--delay': `${bird.delay}s`,
+              '--dx': `${bird.driftX}px`,
+              '--dy': `${bird.driftY}px`,
+            } as CSSProperties}
+          >
+            <i /><i />
+          </span>
+        ))}
+      </div>
+    ) : (
+      <>
+        <div className="scene-cloud cloud-a" /><div className="scene-cloud cloud-b" /><div className="scene-cloud cloud-c" />
+      </>
+    )}
     <div className="scene-topbar">
       <div className="scene-title">
-        {mode !== 'IN_GAME' && <span>ПОЛЁТ ЗАВЕРШЁН</span>}
         <h1>{mode === 'IN_GAME' ? <>Лети выше.<br /><em>Забери вовремя!</em></> : <>Как прошёл<br /><em>ваш полёт?</em></>}</h1>
       </div>
-      {mode !== 'IN_GAME' && createPortal(<div className="scene-actions">
-        <button onClick={() => setModal('rules')}><b>?</b><span>Правила</span></button>
-        <button onClick={() => setModal('history')}><b>↺</b><span>История</span></button>
-        <div className="scene-balance"><i>★</i><span>Баланс<small>{(data?.profile.balance ?? 0).toLocaleString('ru-RU')} бонусов</small></span></div>
-      </div>, document.getElementById('game-header-actions')!)}
     </div>
 
     <div className="scene-board">
@@ -317,7 +364,6 @@ export function GameScene() {
 
       {mode === 'IN_GAME' && round && <div className="flight-side"><FlightControls round={round} pending={pending} onCashout={cashout} />{round.scenario && <p className="scenario-banner">Демо · {scenarioLabels[round.scenario]}</p>}{flightError && <div className="game-error">{flightError} <button onClick={retry}>Повторить</button></div>}</div>}
     </div>
-    {mode !== 'IN_GAME' && <div className="scene-footer"><span>★ +10 очков за каждый уровень</span><span>Следи за высотой и забирай бонусы вовремя</span></div>}
     {modal === 'rules' && <RulesModal onClose={() => setModal(null)} />}
     {modal === 'history' && <HistoryModal onClose={() => setModal(null)} />}
   </section>;
@@ -327,10 +373,10 @@ function ResultState({ result, seconds, onAgain }: { result: GameResult | null; 
   if (!result) return <div className="result-state result-loading"><h2>Открываем бортовой журнал…</h2></div>;
   const won = result.outcome === 'win';
   return <div className={`result-state ${won ? 'won' : 'lost'}`}>
-    <div className="result-sun">{won ? '★' : '✦'}</div><p>{won ? 'УДАЧНАЯ ПОСАДКА' : 'В ЭТОТ РАЗ НЕ ПОВЕЗЛО'}</p>
+    <p>{won ? 'УДАЧНАЯ ПОСАДКА' : 'В ЭТОТ РАЗ НЕ ПОВЕЗЛО'}</p>
     <h2>{won ? 'Отличный полёт!' : 'Шар лопнул'}</h2>
     <div className="result-prize">{won ? number.format(result.payout) : `−${number.format(result.bet)}`}<small>бонусов</small></div>
     <div className="result-inline-stats"><span>Ставка <b>{number.format(result.bet)}</b></span><span>Cashout <b>{result.cashoutMultiplier?.toFixed(2) ?? '—'}x</b></span><span>Crash <b>{result.crashMultiplier.toFixed(2)}x</b></span><span>Очки <b>+{result.points}</b></span></div>
-    <RewardCard reward={result.reward} /><button className="start-flight play-again" onClick={onAgain}><span>Играть снова</span><i>↻</i></button><small className="idle-countdown">Возврат в лобби через {seconds} сек.</small>
+    <RewardCard reward={result.reward} /><button className="start-flight play-again" onClick={onAgain}><span>Играть снова</span></button><small className="idle-countdown">Возврат в лобби через {seconds} секунд</small>
   </div>;
 }
