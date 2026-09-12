@@ -115,6 +115,7 @@ body:has(.app-bet-select),
 
 .bet-select-panel {
   display: flex;
+  align-self: start;
   flex-direction: column;
   gap: 14px;
   padding: 26px 24px 22px;
@@ -289,6 +290,8 @@ body:has(.app-bet-select),
 
 .bet-puzzle {
   --piece-face: #d8eaf0;
+  --piece-highlight: #f7ffff;
+  --piece-shadow: #adcdd8;
   --piece-edge: #7dabbc;
   position: relative;
   display: flex;
@@ -304,6 +307,12 @@ body:has(.app-bet-select),
   filter: drop-shadow(0 6px 5px #17344735);
 }
 
+.bet-puzzle::before { content: ''; position: absolute; z-index: 0; inset: 15px 20px 24px; border-radius: 50%; background: radial-gradient(circle at 35% 30%,#fff9,transparent 35%),repeating-radial-gradient(circle at 70% 70%,transparent 0 7px,#fff2 8px 9px); opacity: .75; pointer-events: none; }
+.bet-puzzle:nth-child(1) { --piece-highlight: #efffdb; --piece-face: #bff293; --piece-shadow: #8fd06c; --piece-edge: #609c49; color: #285632; }
+.bet-puzzle:nth-child(2) { --piece-highlight: #e7fbff; --piece-face: #9fe4f3; --piece-shadow: #70c3d8; --piece-edge: #428fa4; color: #1d566a; }
+.bet-puzzle:nth-child(3) { --piece-highlight: #fff5b7; --piece-face: #ffd36a; --piece-shadow: #e4a63b; --piece-edge: #aa7624; color: #684713; }
+.bet-puzzle:nth-child(4) { --piece-highlight: #ffd9d2; --piece-face: #ff9d91; --piece-shadow: #dc6e67; --piece-edge: #a84c48; color: #6b302f; }
+
 .bet-puzzle-shape {
   position: absolute;
   inset: 0;
@@ -314,7 +323,7 @@ body:has(.app-bet-select),
 }
 
 .puzzle-depth { fill: var(--piece-edge); transform: translateY(5px); }
-.puzzle-face { fill: var(--piece-face); stroke: #ffffffa6; stroke-width: 1.5; transition: fill .2s ease; }
+.puzzle-face { stroke: #ffffffe0; stroke-width: 1.7; transition: fill .2s ease; }
 .puzzle-shine { fill: none; stroke: #fff9; stroke-width: 2.5; stroke-linecap: round; }
 
 
@@ -329,15 +338,16 @@ body:has(.app-bet-select),
   z-index: 2;
 }
 
-.bet-puzzle > span { font-size: 11px; font-weight: 850; color: #537787; }
-.bet-puzzle > strong { font-size: 28px; line-height: 1.1; letter-spacing: -.7px; text-shadow: 0 1px #fff9; }
-.bet-puzzle > small { font-size: 10px; color: #537080; }
+.bet-puzzle > span { font-size: 11px; font-weight: 850; color: inherit; }
+.bet-puzzle > strong { position: relative; z-index: 1; font-size: 30px; line-height: 1.05; letter-spacing: -1px; text-shadow: 0 1px #fff9; }
+.bet-puzzle > small { position: relative; z-index: 1; font-size: 9px; color: inherit; opacity: .72; }
+.bet-puzzle .puzzle-kicker { position: relative; z-index: 1; margin-bottom: 3px; font-size: 8px; letter-spacing: 1.2px; opacity: .68; }
+.bet-puzzle .puzzle-booster-seal { position: absolute; z-index: 1; right: 22px; bottom: 20px; display: grid; place-items: center; min-width: 31px; height: 22px; padding: 0 7px; border: 1px solid #fff9; border-radius: 999px; background: #ffffff5c; box-shadow: inset 0 1px #fff9,0 3px 8px #44331122; font-size: 9px; letter-spacing: .4px; }
 .bet-puzzle:hover:not(:has(input:disabled)) {  filter: drop-shadow(0 10px 6px #17344745) brightness(1.05); }
 .bet-puzzle:has(input:focus-visible) { outline: 3px solid #fff5b0; outline-offset: 2px; border-radius: 15px; }
-.bet-puzzle.selected { --piece-face: #d4f3a7; --piece-edge: #7fba67; color: #315d37;  }
-.theme-red .bet-puzzle.selected { --piece-face: #ffc0a6; --piece-edge: #c87864; color: #7c3d38; }
+.bet-puzzle.selected { filter: brightness(1.08) drop-shadow(0 8px 9px #17344745); transform: translateY(-2px); }
 .bet-puzzle.selected > span, .bet-puzzle.selected > small { color: inherit; }
-.puzzle-check { position: absolute; right: 24px; top: 31px; font-size: 13px; font-weight: 900; font-style: normal; }
+.puzzle-check { position: absolute; z-index: 3; right: 22px; top: 25px; display: grid; place-items: center; width: 23px; height: 23px; border-radius: 50%; background: #fff; box-shadow: 0 4px 10px #17344735; font-size: 12px; font-weight: 900; font-style: normal; }
 .bet-puzzle.unavailable { opacity: .45; filter: grayscale(.5); }
 .bet-puzzle:has(input:disabled), .bet-puzzle input:disabled { cursor: not-allowed; }
 
@@ -517,6 +527,27 @@ body:has(.app-bet-select),
   .bet-select-balloon { min-height: 600px; }
 }
 
+.bet-sky-stats { position: absolute; z-index: 4; top: 0; left: 0; right: 0; display: grid; grid-template-columns: minmax(320px,1.45fr) minmax(210px,.75fr); gap: 12px; width: min(100%,760px); margin: auto; pointer-events: none; }
+.bet-recent { display: grid; gap: 9px; padding: 14px 16px; border: 2px solid #fff; border-radius: 22px; background: linear-gradient(135deg,#e6f8ffed,#beeaffdf); box-shadow: inset 0 2px #fff,0 7px 0 #63abc3aa,0 15px 25px #12354828; color: #245d70; }
+.bet-recent-heading span, .last-game-result small { display: block; margin-bottom: 2px; font-size: 8px; font-weight: 900; letter-spacing: 1.5px; color: #5592a7; }
+.bet-recent-heading strong { font-size: 14px; color: #245d70; }
+.bet-crash-list { display: flex; gap: 6px; overflow: hidden; }
+.bet-crash { flex: 1 0 auto; min-width: 42px; padding: 7px 8px; border: 2px solid #fff; border-radius: 11px; text-align: center; font-size: 10px; font-weight: 900; box-shadow: inset 0 1px #fff9,0 3px 0 #28596b30; }
+.bet-crash-red { background: #ffaaa1; color: #713b38; }
+.bet-crash-gold { background: #ffdc7d; color: #70501a; }
+.bet-crash-blue { background: #aee9f7; color: #245d70; }
+.bet-crash-green { background: #c9f3a4; color: #315f36; }
+
+.bet-last-game { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; padding: 12px 14px; border: 2px solid #fff; border-radius: 22px; background: linear-gradient(135deg,#ffe2dded,#ffb8afdf); box-shadow: inset 0 2px #fff,0 7px 0 #c96f68aa,0 15px 25px #12354828; color: #6b302f; }
+.bet-last-game.last-win { background: linear-gradient(135deg,#efffdbed,#bff293e8); box-shadow: inset 0 2px #fff,0 7px 0 #68a94faa,0 15px 25px #12354828; color: #285632; }
+.last-game-result strong { display: block; font-size: 14px; color: inherit; }
+.last-game-result b { display: block; margin-top: 4px; color: inherit; font-size: 18px; }
+.last-game-result b em { display: block; font-size: 8px; font-style: normal; font-weight: 700; opacity: .68; }
+.bet-last-game dl { display: grid; gap: 5px; margin: 0; }
+.bet-last-game dl div { display: flex; justify-content: space-between; gap: 8px; min-width: 88px; }
+.bet-last-game dt { font-size: 8px; opacity: .65; }
+.bet-last-game dd { margin: 0; font-size: 10px; font-weight: 900; color: inherit; }
+
 @media (max-width: 900px) {
   .bet-select-balloon { height: 325px; }
   .bet-select-balloon .theme-balloon-float { height: 325px; }
@@ -530,9 +561,21 @@ body:has(.app-bet-select),
 .bet-select-balloon { display: flex; flex-direction: column; justify-content: center; height: auto; }
 .bet-select-balloon .theme-balloon-float { flex-shrink: 0; }
 
+@media (min-width: 901px) {
+  .bet-select-balloon { align-self: stretch; height: 100%; }
+}
+
 @media (max-width: 900px) {
-  .bet-select-balloon { height: auto; min-height: 345px; }
+  .bet-select-balloon { height: auto; min-height: 520px; padding-top: 145px; }
   .bet-select-balloon .theme-balloon-float { height: 345px; }
+  .bet-sky-stats { top: 0; grid-template-columns: minmax(0,1.3fr) minmax(190px,.7fr); width: 100%; }
+}
+
+@media (max-width: 620px) {
+  .bet-select-balloon { min-height: 610px; padding-top: 250px; }
+  .bet-sky-stats { grid-template-columns: 1fr; }
+  .bet-crash-list { overflow-x: auto; padding-bottom: 3px; }
+  .bet-last-game { grid-template-columns: 1fr auto; }
 }
 
 @media (min-width: 901px) and (max-height: 800px) {

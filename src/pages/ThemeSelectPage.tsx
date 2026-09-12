@@ -108,6 +108,7 @@ export function ThemeSelectPage() {
               key={option.theme}
               type="button"
               role="listitem"
+              data-sound="water-drop"
               className={`theme-balloon-card option-${option.theme.toLowerCase()}`}
               disabled={selecting}
               onClick={() => void choose(option.theme)}

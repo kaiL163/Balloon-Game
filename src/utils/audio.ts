@@ -39,8 +39,8 @@ export function playWaterDrop() {
     const ctx = context();
     const start = ctx.currentTime;
     importantUntil = Math.max(importantUntil, performance.now() + 450);
-    tone(ctx, start, 0.18, 880, 'sine', 0.22, 220);
-    tone(ctx, start + 0.05, 0.22, 660, 'sine', 0.12, 140);
+    tone(ctx, start, 0.16, 1050, 'sine', 0.18, 310);
+    tone(ctx, start + 0.035, 0.2, 720, 'sine', 0.1, 180);
   } catch { /* Audio may be blocked until a user gesture; selection still proceeds. */ }
 }
 
@@ -138,6 +138,7 @@ export function startInterfaceSounds(): () => void {
   const onClick = (event: MouseEvent) => {
     const target = event.target instanceof Element ? event.target.closest('button, a, [role="button"]') : null;
     if (!target || target.matches(':disabled, [aria-disabled="true"]')) return;
+    if (target.getAttribute('data-sound') === 'water-drop') return;
     playUiClick();
   };
   document.addEventListener('click', onClick);

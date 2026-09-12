@@ -11,7 +11,7 @@ import { HistoryModal } from '../components/HistoryModal';
 import { RulesModal } from '../components/RulesModal';
 import { useFlight } from '../hooks/useFlight';
 import { useIdleReturn } from '../hooks/useIdleReturn';
-import type { BetOption, DemoScenario, GameResult, Theme, ThemeOption, UserProfile } from '../types';
+import type { BetOption, DemoScenario, GameResult, HistoryItem, Theme, ThemeOption, UserProfile } from '../types';
 import { playBetSelection, playLaunch, playResult, prepareGameAudio, startBirdAmbience } from '../utils/audio';
 import { makeBalloonMotion, makeSkyVisit } from '../utils/skyDrift';
 import landscapeUrl from '../assets/theme-select-landscape.png';
@@ -21,8 +21,10 @@ import '../styles/game.css';
 import '../styles/scene.css';
 import '../styles/theme-select.css';
 
-interface LobbyData { profile: UserProfile; bets: BetOption[]; themes: ThemeOption[] }
+interface LobbyData { profile: UserProfile; bets: BetOption[]; themes: ThemeOption[]; history: HistoryItem[] }
 const number = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 });
+const coefficient = (value: number | null) => value === null ? '—' : `${value.toFixed(2)}×`;
+const crashColor = (value: number) => value < 2 ? 'red' : value < 5 ? 'gold' : value < 10 ? 'blue' : 'green';
 const scenarioLabels = { win: 'Авто-cashout на 1.60x', crash: 'Ранний crash на 1.30x', booster: 'Бустер x3 на уровне 2' };
 const themeLabel = (theme: Theme) => theme === 'RED' ? 'Красный шар' : 'Зелёный шар';
 
@@ -63,8 +65,8 @@ export function GameScene() {
   }, [visit]);
 
   const loadLobby = useCallback(async () => {
-    const [profile, bets, themes] = await Promise.all([gameApi.getProfile(), gameApi.getBetOptions(), gameApi.getThemes()]);
-    setData({ profile, bets, themes });
+    const [profile, bets, themes, history] = await Promise.all([gameApi.getProfile(), gameApi.getBetOptions(), gameApi.getThemes(), gameApi.getHistory()]);
+    setData({ profile, bets, themes, history });
     setTheme((current) => {
       if (navTheme) return navTheme;
       if (current === 'RED' || current === 'GREEN') return current;
@@ -127,6 +129,8 @@ export function GameScene() {
   if (!data && !round) return <section className="scene-loader" aria-live="polite"><div className="loader-balloon">●</div><h1>Готовим шар к полёту</h1><p>{error || 'Загружаем бонусы и маршрут…'}</p></section>;
 
   if (mode === 'PRE_GAME' && data) {
+    const recentCrashes = data.history.filter((item) => item.crash !== null).slice(0, 8);
+    const lastGame = data.history[0] ?? null;
     const backdrop = (
       <div
         className="bet-select-backdrop theme-select-backdrop"
@@ -214,8 +218,9 @@ export function GameScene() {
                     className={`bet-puzzle ${selectedId === bet.id ? 'selected' : ''} ${unavailable ? 'unavailable' : ''}`}
                   >
                     <svg className="bet-puzzle-shape" viewBox="0 0 180 120" preserveAspectRatio="none" aria-hidden="true">
+                      <defs><linearGradient id={`puzzle-gradient-${index}`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="var(--piece-highlight)" /><stop offset="0.52" stopColor="var(--piece-face)" /><stop offset="1" stopColor="var(--piece-shadow)" /></linearGradient></defs>
                       <path className="puzzle-depth" d={betPuzzlePaths[index % 4]} />
-                      <path className="puzzle-face" d={betPuzzlePaths[index % 4]} />
+                      <path className="puzzle-face" style={{ fill: `url(#puzzle-gradient-${index})` }} d={betPuzzlePaths[index % 4]} />
                     </svg>
                     <input
                       type="radio"
@@ -226,8 +231,10 @@ export function GameScene() {
                     />
                     {selectedId === bet.id && <i className="puzzle-check" aria-hidden="true">✓</i>}
 
+                    <span className="puzzle-kicker">СТАВКА {String(index + 1).padStart(2, '0')}</span>
                     <strong>{bet.amount}</strong>
-                    <small>{unavailable ? 'мало бонусов' : bet.booster === 1 ? 'без бустера' : `бустер ×${bet.booster}`}</small>
+                    <small>{unavailable ? 'мало бонусов' : 'бонусов'}</small>
+                    <span className="puzzle-booster-seal">{bet.booster === 1 ? 'BASE' : `×${bet.booster}`}</span>
                   </label>
                 );
               })}
@@ -243,6 +250,18 @@ export function GameScene() {
         </aside>
 
         <div className="bet-select-balloon">
+          <div className="bet-sky-stats">
+            <section className="bet-recent" aria-label="Последние коэффициенты crash">
+              <div className="bet-recent-heading"><span>ЭФИР ПОЛЁТОВ</span><strong>Последние crash</strong></div>
+              <div className="bet-crash-list">
+                {recentCrashes.map((item) => <span key={item.id} className={`bet-crash bet-crash-${crashColor(item.crash!)}`}>{coefficient(item.crash)}</span>)}
+              </div>
+            </section>
+            {lastGame && <section className={`bet-last-game last-${lastGame.result.outcome}`} aria-label="Последняя игра">
+              <div className="last-game-result"><small>ПОСЛЕДНИЙ ПОЛЁТ</small><strong>{lastGame.result.outcome === 'win' ? 'Выигрыш' : 'Проигрыш'}</strong><b>{number.format(lastGame.result.payout)} <em>бонусов</em></b></div>
+              <dl><div><dt>Cashout</dt><dd>{coefficient(lastGame.cashout)}</dd></div><div><dt>Crash</dt><dd>{coefficient(lastGame.crash)}</dd></div></dl>
+            </section>}
+          </div>
           <div
             aria-hidden="true" className={`theme-balloon-float scene-${theme.toLowerCase()}`}
             style={{
