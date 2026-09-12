@@ -207,22 +207,117 @@
     animation: none;
   }
 }
-.history-scroll { overflow-x: auto; border-radius: 10px; }
-.history-scroll:focus-visible { outline: 2px solid #b5ef75; outline-offset: 4px; }
-.history-table { border-collapse: collapse; width: 100%; min-width: 730px; text-align: left; font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.history-table caption { text-align: left; color: #a6b6bf; font-size: 11px; padding: 0 0 16px; }
-.history-table th { color: #a0b0ba; font-weight: 500; background: #ffffff04; font-size: 10px; }
-.history-table th, .history-table td { padding: 16px 11px; border-bottom: 1px solid #ffffff0c; }
-.history-table small { color: #99aab5; }
-.history-table tbody tr:hover { background: #ffffff03; }
-.history-theme { font-size: 11px; font-weight: 700; letter-spacing: .5px; }
-.history-green, .history-payout { color: #b5ef75; }
-.history-red { color: #ffa28b; }
-.history-booster { display: inline-block; min-width: 32px; padding: 3px 6px; background: #ffffff08; border-radius: 5px; text-align: center; }
-.history-outcome { display: inline-block; border-radius: 5px; padding: 4px 9px; font-size: 10px; font-weight: 700; }
-.outcome-win { color: #b5ef75; background: #b5ef7512; }
-.outcome-loss { color: #ffa28b; background: #ffa28b12; }
-.history-state { text-align: center; padding: 35px 10px; font-size: 14px; }
+.history-dialog {
+  width: min(920px, calc(100% - 32px));
+}
+
+.history-card {
+  min-height: 280px;
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+}
+
+.history-page-meta {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(238, 244, 245, 0.7);
+}
+
+.history-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  overflow-x: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.history-row {
+  display: grid;
+  grid-template-columns: 28px 72px 72px 56px 52px 64px 64px 80px 48px;
+  gap: 8px;
+  align-items: center;
+  min-width: 620px;
+  padding: 8px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  color: rgba(238, 244, 245, 0.95);
+}
+
+.history-row small {
+  color: rgba(238, 244, 245, 0.65);
+  font-size: 11px;
+}
+
+.history-row-head {
+  border-bottom-color: rgba(255, 255, 255, 0.18);
+  color: rgba(238, 244, 245, 0.65);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  padding-top: 0;
+}
+
+.history-row-num {
+  font-weight: 700;
+  color: rgba(238, 244, 245, 0.75);
+}
+
+.history-note {
+  margin: 10px 0 0;
+  font-size: 11px;
+  line-height: 1.6;
+  color: rgba(238, 244, 245, 0.65);
+}
+
+.history-retry {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.history-theme {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.history-green,
+.history-payout {
+  color: #b5ef75;
+}
+
+.history-red {
+  color: #ffa28b;
+}
+
+.history-booster {
+  display: inline-block;
+  min-width: 32px;
+  padding: 2px 5px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.history-outcome {
+  display: inline-block;
+  border-radius: 5px;
+  padding: 3px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.outcome-win {
+  color: #b5ef75;
+  background: rgba(181, 239, 117, 0.14);
+}
+
+.outcome-loss {
+  color: #ffa28b;
+  background: rgba(255, 162, 139, 0.14);
+}
+
 @media (max-width: 600px) {
   .bet-utilities { justify-content: stretch; }
   .bet-utilities button { flex: 1; }
@@ -237,6 +332,7 @@
   .rules-card h3 { font-size: 18px; }
   .rules-card > p:not(.rules-position) { font-size: 15px; }
   .rules-nav { width: 38px; height: 38px; font-size: 24px; border-radius: 12px; }
+  .history-card { max-height: calc(100dvh - 24px); }
 }
 
 @media (max-width: 420px) {
@@ -258,4 +354,5 @@
   .rule-number { font-size: 18px; }
   .rules-card-close { width: 32px; height: 32px; top: 6px; right: 8px; font-size: 24px; }
   .rules-nav { width: 34px; height: 34px; font-size: 22px; border-radius: 10px; }
+  .history-dialog { width: calc(100% - 16px); }
 }
