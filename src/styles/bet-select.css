@@ -93,11 +93,13 @@ body:has(.app-bet-select),
   width: 100%;
   height: 100%;
   min-height: 100%;
+  max-height: 100%;
   padding: 28px clamp(20px, 4vw, 48px);
   overflow: hidden;
   color: #f4fbff;
   display: grid;
-  grid-template-columns: minmax(300px, 440px) minmax(0, 1fr);
+  grid-template-columns: minmax(min(100%, 300px), 440px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   gap: clamp(20px, 4vw, 56px);
   align-items: center;
   background: transparent;
@@ -115,10 +117,15 @@ body:has(.app-bet-select),
 
 .bet-select-panel {
   display: flex;
-  align-self: start;
+  align-self: center;
   flex-direction: column;
   gap: 14px;
-  padding: 26px 24px 22px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  min-height: 0;
+  padding: clamp(16px, 2.6dvh, 26px) clamp(16px, 2vw, 24px) clamp(14px, 2.2dvh, 22px);
   border: 1.5px solid rgba(255, 255, 255, 0.48);
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.18);
@@ -129,7 +136,7 @@ body:has(.app-bet-select),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
     0 14px 36px rgba(8, 24, 36, 0.28);
   color: #f7fcff;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .bet-select.theme-red .bet-select-panel {
@@ -160,7 +167,7 @@ body:has(.app-bet-select),
 .bet-select-heading strong {
   display: block;
   margin-top: 6px;
-  font-size: clamp(24px, 2.4vw, 30px);
+  font-size: clamp(22px, 2.8dvh, 30px);
   letter-spacing: -0.6px;
   color: #fffef8;
   text-shadow:
@@ -374,11 +381,11 @@ body:has(.app-bet-select),
 .theme-green .bet-select-heading strong { color: #b6f29d; }
 .bet-select-launch {
   width: 100%;
-  min-height: 56px;
+  min-height: clamp(48px, 6.5dvh, 56px);
   border: 0;
   border-radius: 18px;
-  padding: 14px 18px;
-  font-size: 18px;
+  padding: clamp(10px, 1.6dvh, 14px) 18px;
+  font-size: clamp(16px, 2.2dvh, 18px);
   font-weight: 850;
   cursor: pointer;
   display: flex;
@@ -472,7 +479,8 @@ body:has(.app-bet-select),
     align-items: stretch;
     padding: 20px clamp(14px, 4vw, 24px);
     gap: 16px;
-    overflow-y: auto;
+    overflow: hidden;
+    max-height: 100%;
   }
 
   .bet-select-panel {
@@ -501,30 +509,13 @@ body:has(.app-bet-select),
 
   .bet-select-panel {
     padding: 18px 14px 16px;
-    gap: 14px;
     border-radius: 22px;
-  }
-
-  .bet-puzzle {
-    min-height: 112px;
-    padding: 24px;
-  }
-
-  .bet-puzzle strong {
-    font-size: 22px;
   }
 
   .bet-select-launch {
     min-height: 50px;
     font-size: 16px;
   }
-}
-
-
-@media (min-width: 901px) and (max-height: 760px) {
-  .bet-select { overflow-y: auto; align-items: start; }
-  .bet-select-panel { gap: 12px; padding-top: 20px; padding-bottom: 18px; }
-  .bet-select-balloon { min-height: 600px; }
 }
 
 .bet-sky-stats { position: absolute; z-index: 4; top: 0; left: 0; right: 0; display: grid; grid-template-columns: minmax(0,1.45fr) minmax(180px,.75fr); gap: 12px; width: min(100%,760px); margin: auto; pointer-events: none; }
@@ -554,14 +545,22 @@ body:has(.app-bet-select),
   .bet-last-game dl div { display: block; min-width: 0; }
 }
 
-@media (max-width: 900px) {
-  .bet-select-balloon { height: 325px; }
-  .bet-select-balloon .theme-balloon-float { height: 325px; }
+/* Keep the paired puzzle edges aligned in every selection state. */
+.bet-puzzle-grid {
+  gap: clamp(14px, 2.6dvh, 24px);
+  padding: 4px 2px clamp(6px, 1.2dvh, 10px);
 }
 
-/* Keep the paired puzzle edges aligned in every selection state. */
-.bet-puzzle-grid { gap: 24px; padding: 4px 2px 10px; }
-.bet-puzzle { filter: none; }
+.bet-puzzle {
+  filter: none;
+  min-height: clamp(84px, 12.5dvh, 112px);
+  padding: clamp(14px, 2.4dvh, 24px);
+}
+
+.bet-puzzle > strong {
+  font-size: clamp(22px, 3.4dvh, 31px);
+}
+
 .puzzle-depth { transform: translateY(3px); }
 .bet-puzzle:hover:not(:has(input:disabled)) { filter: brightness(1.06); }
 .bet-select-balloon { display: flex; flex-direction: column; justify-content: center; height: auto; }
@@ -572,31 +571,79 @@ body:has(.app-bet-select),
 }
 
 @media (max-width: 900px) {
-  .bet-select-balloon { height: auto; min-height: 520px; padding-top: 145px; }
-  .bet-select-balloon .theme-balloon-float { height: 345px; }
-  .bet-sky-stats { top: 0; grid-template-columns: minmax(0,1.3fr) minmax(190px,.7fr); width: 100%; }
+  .bet-select-panel {
+    max-height: none;
+  }
+
+  .bet-select-balloon {
+    height: auto;
+    min-height: min(420px, 48dvh);
+    padding-top: 120px;
+  }
+
+  .bet-select-balloon .theme-balloon-float {
+    height: min(300px, 36dvh);
+  }
+
+  .bet-sky-stats {
+    top: 0;
+    grid-template-columns: minmax(0, 1.3fr) minmax(190px, .7fr);
+    width: 100%;
+  }
 }
 
 @media (max-width: 620px) {
-  .bet-select-balloon { min-height: 440px; padding-top: 190px; }
-  .bet-select-balloon .theme-balloon-float { height: 250px; }
-  .bet-select-balloon .theme-balloon-float .air-balloon { top: 8%; scale: 1; }
-  .bet-sky-stats { grid-template-columns: 1fr; gap: 8px; }
-  .bet-recent, .bet-last-game { padding: 9px 11px; border-radius: 17px; }
-  .bet-recent { gap: 5px; }
-  .bet-crash-list { overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
-  .bet-crash-list::-webkit-scrollbar { display: none; }
-  .bet-crash { padding: 5px 7px; }
-  .last-game-result b { margin-top: 1px; font-size: 16px; }
-  .bet-last-game { grid-template-columns: 1fr auto; }
-}
+  .bet-select-balloon {
+    min-height: min(360px, 46dvh);
+    padding-top: 150px;
+  }
 
-@media (min-width: 901px) and (max-height: 800px) {
-  .bet-select-panel { gap: 9px; padding: 18px 24px; }
-  .bet-select-panel .bet-puzzle { min-height: 94px; padding: 19px; }
-  .bet-select-panel .bet-puzzle-grid { gap: 22px; }
-  .bet-select-panel .bet-chest-note { padding: 6px 10px; }
-  .bet-select-panel .bet-select-heading p { margin-top: 4px; }
+  .bet-select-balloon .theme-balloon-float {
+    height: min(220px, 30dvh);
+  }
+
+  .bet-select-balloon .theme-balloon-float .air-balloon {
+    top: 8%;
+    scale: 1;
+  }
+
+  .bet-sky-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .bet-recent,
+  .bet-last-game {
+    padding: 9px 11px;
+    border-radius: 17px;
+  }
+
+  .bet-recent {
+    gap: 5px;
+  }
+
+  .bet-crash-list {
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .bet-crash-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bet-crash {
+    padding: 5px 7px;
+  }
+
+  .last-game-result b {
+    margin-top: 1px;
+    font-size: 16px;
+  }
+
+  .bet-last-game {
+    grid-template-columns: 1fr auto;
+  }
 }
 
 /* The lobby and the active round are two states of one continuous scene. */
@@ -663,7 +710,8 @@ body:has(.app-bet-select),
 .bet-panel-lobby-view {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: clamp(10px, 1.8dvh, 14px);
+  min-width: 0;
   transform-origin: left center;
 }
 
@@ -706,6 +754,8 @@ body:has(.app-bet-select),
 
 .bet-flight-stage.is-flight .bet-select-panel {
   align-self: stretch;
+  max-height: none;
+  overflow: hidden;
   color: #f7fcff;
   background: rgba(255, 255, 255, .18);
   border-color: rgba(255, 255, 255, .48);

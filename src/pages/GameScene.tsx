@@ -290,7 +290,6 @@ export function GameScene() {
 
           <button className="bet-select-launch" disabled={!canStart} onClick={() => void start()}>
             <span>{starting ? 'Взлетаем…' : 'Начать'}</span>
-            <i aria-hidden="true">↑</i>
           </button>
           <p className="bet-select-note">Ставка спишется в момент старта</p>
           {error && <p className="bet-select-error" role="alert">{error}</p>}
