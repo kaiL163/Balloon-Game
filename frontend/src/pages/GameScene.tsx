@@ -42,7 +42,8 @@ export function GameScene() {
   const rawScenario = params.get('scenario');
   const scenario = rawScenario && ['win', 'crash', 'booster'].includes(rawScenario) ? rawScenario as DemoScenario : null;
   const navTheme = readNavTheme(location.state);
-  const { round, error: flightError, pending, cashout, retry } = useFlight(scenario);
+  const isResult = location.pathname.startsWith('/result');
+  const { round, error: flightError, pending, cashout, retry } = useFlight(scenario, !isResult);
   const [data, setData] = useState<LobbyData | null>(null);
   const [theme, setTheme] = useState<Theme>(() => navTheme ?? 'GREEN');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -60,7 +61,6 @@ export function GameScene() {
   const soundedResult = useRef<string | null>(null);
   const launchBalloonRef = useRef<HTMLDivElement | null>(null);
   const activeWorldRef = useRef<HTMLDivElement | null>(null);
-  const isResult = location.pathname.startsWith('/result');
   const resultRoundId = params.get('round') ?? undefined;
   const mode = isResult ? 'RESULT' : round ? 'IN_GAME' : 'PRE_GAME';
 

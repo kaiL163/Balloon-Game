@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { gameApi } from '../api';
 import type { DemoScenario, Round } from '../types';
 
-export function useFlight(scenario: DemoScenario | null) {
+export function useFlight(scenario: DemoScenario | null, enabled = true) {
   const navigate = useNavigate();
   const [round, setRound] = useState<Round | null>(null);
   const [loading, setLoading] = useState(true);
@@ -16,6 +16,14 @@ export function useFlight(scenario: DemoScenario | null) {
 
   useEffect(() => {
     let cancelled = false;
+    if (!enabled) {
+      live.current = false;
+      current.current = null;
+      setRound(null);
+      setError('');
+      setLoading(false);
+      return;
+    }
     live.current = true;
     setLoading(true);
     setError('');
@@ -29,19 +37,19 @@ export function useFlight(scenario: DemoScenario | null) {
     }).catch((cause) => { if (!cancelled) setError(cause instanceof Error ? cause.message : 'Не удалось загрузить полёт.'); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; live.current = false; };
-  }, [scenario, attempt]);
+  }, [scenario, attempt, enabled]);
 
   useEffect(() => {
-    if (!round || !['active', 'cashed_out'].includes(round.status) || error) return;
+    if (!enabled || !round || !['active', 'cashed_out'].includes(round.status) || error) return;
     return gameApi.subscribeToRound(
       round.id,
       (next) => { current.current = next; setRound(next); },
       (cause) => setError(cause.message || 'Не удалось обновить полёт.'),
     );
-  }, [round?.id, round?.status, error]);
+  }, [round?.id, round?.status, error, enabled]);
 
   useEffect(() => {
-    if (!round || round.status !== 'crashed' || error) return;
+    if (!enabled || !round || round.status !== 'crashed' || error) return;
     let cancelled = false;
     const timer = setTimeout(() => {
       gameApi.finishRound(round.id).then(() => {
@@ -49,7 +57,7 @@ export function useFlight(scenario: DemoScenario | null) {
       }).catch((cause) => { if (!cancelled) setError(cause instanceof Error ? cause.message : 'Не удалось сохранить результат.'); });
     }, 1400);
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [round?.id, round?.status, navigate, error]);
+  }, [round?.id, round?.status, navigate, error, enabled]);
 
   async function cashout() {
     if (!current.current || busy.current) return;
