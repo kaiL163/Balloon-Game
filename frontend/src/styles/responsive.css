@@ -35,3 +35,240 @@ html,body,#root{width:100%;max-width:100%;min-width:0;margin:0;overflow-x:hidden
   .mode-result .result-actions>button{width:100%;min-height:52px;font-size:16px}
   .mode-result .result-state{max-width:100%;overflow-wrap:anywhere}
 }
+
+/* Responsive system v2. This stylesheet is loaded last and normalizes the
+   older page-specific full-screen rules. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+*,*::before,*::after{box-sizing:border-box}
+img,svg,video,canvas{max-inline-size:100%}
+button,input,select,textarea{max-inline-size:100%}
+.auth-stack,.auth-panel,.theme-select-copy,.theme-balloon-row,.theme-balloon-card,
+.bet-select,.bet-select-panel,.bet-select-balloon,.bet-flight-stage,
+.admin-page-inner,.admin-section,.admin-field,.scene-board,.world-stage,
+.result-state,.modal-card{min-inline-size:0}
+.theme-select-copy h1,.auth-heading h1,.bet-select-panel h1,.admin-page h1,
+.scene-title,.result-state h1{overflow-wrap:anywhere;text-wrap:balance}
+
+@media(max-width:1200px){
+  .bet-select{grid-template-columns:minmax(300px,390px) minmax(0,1fr);gap:clamp(14px,2vw,24px);padding-inline:clamp(16px,3vw,34px)}
+  .admin-page-inner{width:min(100%,1080px)}
+  .admin-field-grid{gap:12px}
+}
+
+/* Pages may grow beyond one viewport instead of clipping their content. */
+@media(max-width:900px),(max-height:720px){
+  html:has(.app-auth),html:has(.app-theme-select),body:has(.app-auth),
+  body:has(.app-theme-select),#root:has(.app-auth),#root:has(.app-theme-select),
+  .app-auth,.app-theme-select,.main-auth,.main-theme-select{
+    block-size:auto!important;min-block-size:100dvh;max-block-size:none!important;overflow-y:visible!important
+  }
+  .app:has(.bet-select),.app:has(.bet-select)>main{
+    block-size:auto!important;min-block-size:100dvh!important;max-block-size:none!important;overflow:visible!important
+  }
+  .auth-page,.theme-select,.bet-select{
+    block-size:auto!important;min-block-size:100dvh!important;max-block-size:none!important;overflow-y:auto!important
+  }
+  .floating-session-actions{
+    top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));
+    max-inline-size:calc(100vw - 20px - env(safe-area-inset-left))
+  }
+}
+
+@media(max-width:900px){
+  .theme-select{
+    justify-content:flex-start;
+    padding:max(72px,calc(54px + env(safe-area-inset-top))) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))
+  }
+  .theme-balloon-row{grid-template-columns:repeat(2,minmax(0,1fr));width:min(100%,760px)}
+  .theme-balloon-card{width:100%}
+  .bet-select,.bet-flight-stage{
+    block-size:auto!important;min-block-size:100dvh!important;max-block-size:none!important;
+    overflow-x:clip!important;overflow-y:auto!important;overscroll-behavior-y:contain
+  }
+  .bet-select-panel{inline-size:100%;max-inline-size:720px;justify-self:center}
+  .bet-select-balloon{inline-size:100%}
+  .bet-flight-stage.is-launching .bet-select-balloon,
+  .bet-flight-stage.is-flight .bet-select-balloon{
+    height:clamp(340px,56dvh,520px)!important;min-height:clamp(340px,56dvh,520px)!important;max-height:none!important
+  }
+  .admin-page-inner{
+    padding-inline:max(14px,env(safe-area-inset-left)) max(14px,env(safe-area-inset-right))
+  }
+  .modal-backdrop{
+    align-items:center;
+    padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))
+  }
+  .modal-card{
+    width:min(100%,760px);
+    max-block-size:calc(100dvh - max(24px,env(safe-area-inset-top)) - max(24px,env(safe-area-inset-bottom)));
+    overflow:auto
+  }
+}
+
+@media(max-width:700px){
+  .theme-balloon-row{grid-template-columns:1fr;width:min(100%,470px)}
+  .theme-balloon-card{min-block-size:0}
+}
+
+@media(max-width:760px){
+  .header{
+    position:sticky;top:0;z-index:40;
+    padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left))
+  }
+  .header-actions{min-width:0}.header-actions>*{flex:0 1 auto}
+  .logout-button,.admin-link,.history-open-button{min-block-size:42px}
+  footer{padding-bottom:max(12px,env(safe-area-inset-bottom));text-align:center}
+  .auth-page{
+    place-items:start center;
+    padding:max(68px,calc(50px + env(safe-area-inset-top))) max(14px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))
+  }
+  .auth-stack{width:min(100%,520px)}.auth-panel{max-block-size:none}
+  .auth-submit,.auth-demo-button,.theme-balloon-card,.bet-puzzle,.bet-select-launch,
+  .admin-save-button,.result-actions button,.cashout-button{touch-action:manipulation}
+  .bet-select,.bet-flight-stage{
+    padding:12px max(10px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))!important
+  }
+  .bet-select-panel{padding:clamp(14px,4vw,22px)}
+  .bet-puzzle-grid{gap:clamp(10px,3vw,16px)}
+  .bet-puzzle{min-block-size:clamp(82px,24vw,108px);padding:clamp(12px,4vw,18px)}
+  .bet-puzzle>strong{font-size:clamp(22px,7vw,30px)}
+  .bet-flight-stage.is-launching .bet-select-balloon,
+  .bet-flight-stage.is-flight .bet-select-balloon{
+    height:clamp(330px,58dvh,500px)!important;min-height:clamp(330px,58dvh,500px)!important
+  }
+  .active-world .flight-level{
+    min-height:14px!important;height:14px!important;gap:4px!important;font-size:10px!important;line-height:1!important
+  }
+  .active-world .flight-level .level-number{
+    width:18px!important;min-width:18px!important;height:18px!important;font-size:9px!important
+  }
+  .active-world .flight-level .level-value{
+    min-width:38px!important;padding:2px 5px!important;font-size:9px!important
+  }
+  .active-world .flight-level .level-booster{scale:.64;transform-origin:right center}
+  .active-world .flying-position{
+    width:clamp(78px,24vw,108px)!important;height:clamp(106px,31vw,142px)!important
+  }
+  .active-world .flight-balloon.air-balloon{scale:.62!important;transform-origin:center bottom}
+  .bet-flight-stage.is-flight{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}
+  .bet-flight-stage.is-flight .cashout-action{
+    left:max(10px,env(safe-area-inset-left))!important;right:max(10px,env(safe-area-inset-right))!important;
+    bottom:max(10px,env(safe-area-inset-bottom))!important
+  }
+  .admin-page{padding-bottom:max(24px,env(safe-area-inset-bottom))}
+  .admin-section,.admin-toolbar,.admin-summary,.admin-simulator{border-radius:20px}
+  .admin-grid:has(.admin-probability){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-probability{padding:10px}
+  .modal-card{border-radius:22px;padding:clamp(14px,4vw,22px)}
+  .history-card{overflow:auto}.history-row-head{display:none!important}
+  .history-row:not(.history-row-head){
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;min-width:0!important;
+    gap:10px 8px!important;margin-bottom:10px;padding:12px!important;
+    border:1px solid rgba(255,255,255,.16);border-radius:16px;background:rgba(18,47,61,.82)
+  }
+  .history-row:not(.history-row-head)>span{
+    display:grid;min-width:0;gap:3px;overflow-wrap:anywhere
+  }
+  .history-row:not(.history-row-head)>span::before{
+    color:#6f91a0;font-size:8px;font-weight:900;letter-spacing:.05em;text-transform:uppercase
+  }
+  .history-row>span:nth-child(1)::before{content:"Раунд"}.history-row>span:nth-child(2)::before{content:"Тема"}
+  .history-row>span:nth-child(3)::before{content:"Ставка"}.history-row>span:nth-child(4)::before{content:"Бустер"}
+  .history-row>span:nth-child(5)::before{content:"Итог"}.history-row>span:nth-child(6)::before{content:"Выход"}
+  .history-row>span:nth-child(7)::before{content:"Краш"}.history-row>span:nth-child(8)::before{content:"Выплата"}
+  .history-row>span:nth-child(9)::before{content:"Очки"}
+}
+
+@media(max-width:480px){
+  .floating-session-actions{gap:6px}
+  .floating-session-actions .logout-button,.floating-session-actions .admin-link{
+    min-height:38px;padding-inline:10px;font-size:12px
+  }
+  .theme-select-copy h1{font-size:clamp(28px,11vw,42px)}
+  .theme-balloon-card{padding:14px}
+  .theme-balloon-float{height:clamp(150px,48vw,210px)!important}
+  .theme-balloon-float .air-balloon{scale:.78!important}
+  .bet-sky-stats{position:relative;grid-template-columns:1fr}
+  .bet-select-balloon{padding-top:0!important}
+  .bet-select:not(.is-flight) .bet-select-balloon{min-height:0!important}
+  .bet-puzzle-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .active-world .flight-level{height:12px!important;min-height:12px!important;font-size:8px!important}
+  .active-world .flight-level .level-number{
+    width:16px!important;min-width:16px!important;height:16px!important;font-size:8px!important
+  }
+  .active-world .flight-level .level-value{min-width:34px!important;font-size:8px!important}
+  .admin-grid:has(.admin-probability){grid-template-columns:1fr}
+  .history-row:not(.history-row-head){grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .result-card,.result-state{padding-inline:clamp(12px,4vw,18px)!important}
+}
+
+@media(max-width:360px){
+  .header .brand strong{display:none}
+  .header-actions{width:100%;justify-content:flex-end}
+  .auth-tabs,.bet-puzzle-grid,.result-actions,.history-row:not(.history-row-head){grid-template-columns:1fr!important}
+  .auth-tab,.auth-submit,.bet-select-launch,.cashout-button{font-size:14px}
+}
+
+/* Short landscape screens retain two useful columns and become vertically
+   scrollable when browser chrome leaves very little height. */
+@media(orientation:landscape) and (min-width:600px) and (max-height:600px){
+  .auth-page,.theme-select{
+    block-size:auto!important;min-block-size:100dvh!important;max-block-size:none!important;overflow-y:auto!important
+  }
+  .auth-page{
+    place-items:start center;
+    padding-block:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-bottom))
+  }
+  .auth-stack{width:min(100%,520px)}
+  .auth-brand-mark,.auth-heading p{display:none}
+  .auth-stack,.auth-panel,.auth-form{gap:8px}
+  .theme-select{
+    justify-content:flex-start;gap:8px;
+    padding:max(50px,calc(38px + env(safe-area-inset-top))) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))
+  }
+  .theme-select-copy h1{font-size:clamp(26px,6vw,42px)}
+  .theme-select-copy p,.theme-how-to-play{display:none}
+  .theme-balloon-row{
+    grid-template-columns:repeat(2,minmax(0,300px))!important;justify-content:center;gap:12px
+  }
+  .theme-balloon-card{min-height:0;padding:10px 14px}
+  .theme-balloon-float{height:106px!important}
+  .theme-balloon-float .air-balloon{scale:.45!important}
+  .bet-select,.bet-flight-stage{
+    grid-template-columns:minmax(270px,42vw) minmax(0,1fr)!important;
+    grid-template-rows:auto!important;align-items:stretch;gap:12px!important;
+    block-size:auto!important;min-block-size:100dvh!important;max-block-size:none!important;
+    padding:10px max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important;
+    overflow-y:auto!important
+  }
+  .bet-select-panel,.bet-flight-stage.is-flight .bet-select-panel{
+    order:0!important;align-self:start;padding:12px
+  }
+  .bet-select-balloon,.bet-flight-stage.is-launching .bet-select-balloon,
+  .bet-flight-stage.is-flight .bet-select-balloon{
+    order:1!important;align-self:start;height:max(330px,calc(100dvh - 20px))!important;
+    min-height:max(330px,calc(100dvh - 20px))!important;max-height:none!important;padding-top:0!important
+  }
+  .bet-puzzle-grid{gap:9px}
+  .bet-puzzle{min-height:74px;padding:10px 12px}
+  .bet-puzzle>strong{font-size:22px}
+  .bet-flight-stage.is-flight{padding-bottom:10px!important}
+  .bet-flight-stage.is-flight .cashout-action{
+    position:sticky!important;left:auto!important;right:auto!important;bottom:8px!important
+  }
+  .modal-backdrop{align-items:flex-start}
+  .modal-card{max-height:calc(100dvh - 20px)}
+}
+
+/* Readable line length on very wide monitors. */
+@media(min-width:1600px){
+  .bet-select,.bet-flight-stage,.theme-select-inner,.admin-page-inner{
+    width:min(100%,1720px);margin-inline:auto
+  }
+  .bet-select,.bet-flight-stage{padding-inline:clamp(32px,5vw,92px)}
+}
+
+@media(hover:none),(pointer:coarse){
+  .theme-balloon-card:hover,.bet-puzzle:hover,.result-actions button:hover,.admin-save-button:hover{transform:none}
+  button,a,input,select{-webkit-tap-highlight-color:transparent}
+}

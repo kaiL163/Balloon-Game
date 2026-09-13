@@ -58,7 +58,7 @@ export function Layout() {
       {(isThemeSelect || isAdminPage) ? <div className="floating-session-actions">{adminButton}{logoutButton}</div> : null}
       <main
         className={isAuth ? 'main-auth' : isThemeSelect ? 'main-theme-select' : isAdminPage ? 'main-admin' : undefined}
-        style={hideChrome ? { padding: 0, margin: 0, maxWidth: 'none', width: '100%', height: '100%', background: 'transparent' } : undefined}
+        style={hideChrome ? { padding: 0, margin: 0, maxWidth: 'none', width: '100%', minHeight: '100%', background: 'transparent' } : undefined}
       >
         <Outlet />
       </main>
