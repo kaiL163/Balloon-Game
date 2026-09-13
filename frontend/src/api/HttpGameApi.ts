@@ -139,6 +139,7 @@ export class HttpGameApi implements GameApi {
     let stopped = false;
     let refreshing = false;
     let queued = false;
+    let fallbackTimer: number | null = null;
 
     const refresh = async () => {
       if (refreshing) { queued = true; return; }
@@ -154,6 +155,18 @@ export class HttpGameApi implements GameApi {
       }
     };
 
+    const stopFallback = () => {
+      if (fallbackTimer === null) return;
+      window.clearInterval(fallbackTimer);
+      fallbackTimer = null;
+    };
+    const startFallback = () => {
+      if (stopped || fallbackTimer !== null) return;
+      void refresh();
+      fallbackTimer = window.setInterval(() => void refresh(), 500);
+    };
+
+    socket.onopen = stopFallback;
     socket.onmessage = (message) => {
       try {
         const event = JSON.parse(String(message.data)) as { type?: string; level?: number; error?: string };
@@ -167,8 +180,9 @@ export class HttpGameApi implements GameApi {
         if (!stopped) onError(cause instanceof Error ? cause : new Error('Некорректное сообщение сервера.'));
       }
     };
-    socket.onerror = () => { if (!stopped) onError(new Error('Потеряно соединение с полётом.')); };
-    return () => { stopped = true; socket.close(); };
+    socket.onerror = startFallback;
+    socket.onclose = startFallback;
+    return () => { stopped = true; stopFallback(); socket.close(); };
   }
 
   private async loadRound(dto: RoundDto) {

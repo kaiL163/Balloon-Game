@@ -187,7 +187,8 @@ export function GameScene() {
     setRepeating(true);
     try {
       const [profile, bets] = await Promise.all([gameApi.getProfile(), gameApi.getBetOptions()]);
-      const bet = bets.find((option) => option.amount === result.bet);
+      const bet = bets.find((option) => option.amount === result.bet && option.booster === result.booster)
+        ?? bets.find((option) => option.amount === result.bet);
       if (!bet) {
         setRepeatError('Не удалось найти прошлую ставку.');
         return;
@@ -199,8 +200,8 @@ export function GameScene() {
       prepareGameAudio();
       playLaunch();
       await gameApi.startRound(bet.id, result.theme);
-      retry();
       navigate('/game', { replace: true, state: { theme: result.theme } });
+      retry();
       setStarting(true);
       window.setTimeout(() => setStarting(false), 900);
     } catch (cause) {
@@ -528,7 +529,7 @@ function ResultState({
         <span>Играть снова</span>
       </button>
       <button className="start-flight repeat-bet" type="button" disabled={repeating} onClick={onRepeat}>
-        <span>{repeating ? 'Взлетаем…' : 'Повторить ставку'}</span>
+        <span>{repeating ? 'Взлетаем…' : 'Повторить'}</span>
       </button>
     </div>
     {repeatError && <p className="result-repeat-error" role="alert">{repeatError}</p>}

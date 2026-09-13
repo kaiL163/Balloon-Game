@@ -6,6 +6,8 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Arrays;
+
 /**
  * Регистрирует WebSocket-эндпоинт /ws/game/{roundId}.
  *
@@ -24,7 +26,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
             GameWebSocketHandler webSocketHandler,
             @Value("${app.allowed-origin-patterns:http://localhost:*,http://127.0.0.1:*}") String allowedOriginPatterns) {
         this.webSocketHandler = webSocketHandler;
-        this.allowedOriginPatterns = allowedOriginPatterns.split(",");
+        this.allowedOriginPatterns = Arrays.stream(allowedOriginPatterns.split(","))
+                .map(String::trim)
+                .filter(pattern -> !pattern.isEmpty())
+                .toArray(String[]::new);
     }
 
     @Override

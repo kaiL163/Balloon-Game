@@ -26,3 +26,12 @@ html,body,#root{width:100%;max-width:100%;min-width:0;margin:0;overflow-x:hidden
 }
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Result actions: side by side when there is room, stacked and touch-friendly on phones. */
+.mode-result .result-actions{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+.mode-result .result-actions>button{min-width:0;white-space:normal}
+@media(max-width:560px){
+  .mode-result .result-actions{grid-template-columns:1fr!important;gap:9px}
+  .mode-result .result-actions>button{width:100%;min-height:52px;font-size:16px}
+  .mode-result .result-state{max-width:100%;overflow-wrap:anywhere}
+}

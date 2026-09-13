@@ -15,7 +15,7 @@ export function ResultPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const goBack = useCallback(() => navigate('/bet', { replace: true }), [navigate]);
-  const playAgain = useCallback(() => navigate('/', { replace: true }), [navigate]);
+  const playAgain = useCallback(() => navigate('/bet', { replace: true }), [navigate]);
   const seconds = useIdleReturn(goBack, !!result);
   useEffect(() => {
     let cancelled = false;
