@@ -355,13 +355,14 @@ body:has(.scene-loader),
 /* Content must remain reachable at browser zoom and on short desktop windows. */
 html:has(.bet-select),body:has(.bet-select),#root:has(.bet-select),
 html:has(.mode-result),body:has(.mode-result),#root:has(.mode-result){
-  height:auto!important;min-height:100dvh!important;overflow-y:auto!important;
+  height:auto!important;min-height:100dvh!important;overflow-y:auto!important;background:#6eb8e0!important;
 }
 .app:has(.bet-select),.app:has(.bet-select)>main,
 .app:has(.mode-result),.app:has(.mode-result)>main,
 .unified-scene.mode-result,.mode-result .scene-board{
-  height:auto!important;min-height:100dvh;max-height:none!important;overflow:visible!important;
+  height:auto!important;min-height:100dvh;max-height:none!important;overflow:visible!important;background-color:#6eb8e0;
 }
+.bet-select-backdrop,.theme-select-backdrop{width:100vw;height:100dvh;min-height:100dvh;background-color:#6eb8e0!important}
 .bet-select{height:auto!important;min-height:100dvh;max-height:none!important}
 .bet-select-panel{max-height:none!important;overflow:visible!important}
 .bet-select.is-lobby .bet-select-balloon{min-height:480px}
@@ -420,6 +421,15 @@ html:has(.mode-result),body:has(.mode-result),#root:has(.mode-result){
   .bet-panel-flight-view .live-multiplier{font-size:clamp(42px,12vw,64px);line-height:1.1;letter-spacing:-2px}
   .bet-panel-flight-view .flight-stats{margin-block:8px;gap:6px}
   .bet-panel-flight-view .game-controls{gap:8px}
+  .bet-flight-stage.is-flight .cashout-action{
+    left:max(12px,env(safe-area-inset-left))!important;
+    right:max(12px,env(safe-area-inset-right))!important;
+    bottom:max(12px,env(safe-area-inset-bottom))!important;
+    width:auto!important;padding:0!important;
+  }
+  .bet-flight-stage.is-flight .cashout-button{
+    min-height:56px!important;border-radius:18px!important;
+  }
   .game-modal,.rules-dialog{
     max-height:calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     max-width:calc(100% - 24px);overflow:auto;overscroll-behavior:contain;
@@ -475,7 +485,17 @@ html:has(dialog[open]),body:has(dialog[open]){overflow:hidden!important}
   .theme-select .theme-balloon-row .theme-balloon-float .air-balloon{
     scale:.55!important;transform-origin:top left;top:6px;
   }
-  .theme-select .theme-balloon-card>strong{align-self:end;margin:0;color:#fff;text-shadow:0 1px 3px #244760}
-  .theme-select .theme-balloon-meta{align-self:start;display:flex;flex-direction:column;gap:5px;font-size:12px}
+  .theme-select .theme-balloon-card>strong{
+    grid-column:2;grid-row:1;align-self:end;justify-self:stretch;margin:0;text-align:center;
+    color:#fff;text-shadow:0 1px 3px #244760;
+  }
+  .theme-select .theme-balloon-meta{
+    grid-column:2;grid-row:2;align-self:start;justify-self:stretch;display:flex;
+    flex-direction:column;gap:5px;text-align:center;font-size:12px;
+  }
   .theme-select .theme-how-to-play{width:min(100%,440px);min-height:48px}
+  .bet-select .bet-crash-list{
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;overflow:visible;padding-bottom:0;
+  }
+  .bet-select .bet-crash{min-width:0;width:100%;padding:5px 2px;font-size:9px}
 }
