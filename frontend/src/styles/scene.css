@@ -97,6 +97,7 @@ main { max-width:none; margin:0; padding:0; }
 .mode-result .result-inline-stats { margin:18px 0 0; padding:12px; }
 .mode-result .result-state .reward-card { margin:28px 0; padding:16px 18px; }
 .mode-result .play-again { min-height:54px; margin-top:8px; }
+.mode-result .repeat-bet { min-height:54px; }
 .mode-result .idle-countdown { margin-top:14px; }
 @media(max-width:1100px) {
   .header { padding:0 24px; }
@@ -935,6 +936,51 @@ body:has(.mode-result),
   transition: filter 0.2s ease, transform 0.2s ease, background 0.2s ease;
 }
 
+.mode-result .result-actions {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.mode-result .result-actions .play-again,
+.mode-result .result-actions .repeat-bet {
+  margin-top: 0;
+  width: 100%;
+  min-height: 54px;
+  padding: 14px 18px;
+  font-size: 20px;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.mode-result .repeat-bet {
+  gap: 0;
+  background: linear-gradient(180deg, #fff8e8, #f3d9a4);
+  color: #6a4618;
+  box-shadow: 0 8px 0 #c9964a88, 0 14px 28px #814c1f33;
+  transition: filter 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.mode-result .repeat-bet:hover:not(:disabled) {
+  filter: brightness(0.96);
+  transform: translateY(1px);
+}
+
+.mode-result .repeat-bet:active:not(:disabled),
+.mode-result .repeat-bet:disabled {
+  filter: brightness(0.9);
+}
+
+.mode-result .result-repeat-error {
+  margin: 10px 0 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(90, 20, 20, 0.45);
+}
+
 .mode-result .play-again:hover {
   filter: brightness(0.88);
   transform: translateY(1px);
@@ -1193,11 +1239,23 @@ body:has(.mode-result),
     font-size: 10px;
   }
 
-  .mode-result .play-again {
+  .mode-result .play-again,
+  .mode-result .repeat-bet {
     min-height: 49px;
     margin-top: 0;
     padding: 12px 16px;
     font-size: 17px;
+  }
+
+  .mode-result .result-actions {
+    gap: 8px;
+  }
+
+  .mode-result .result-repeat-error {
+    margin-top: 8px;
+    color: #9b2f2f;
+    font-size: 12px;
+    text-shadow: none;
   }
 
   .mode-result .idle-countdown {

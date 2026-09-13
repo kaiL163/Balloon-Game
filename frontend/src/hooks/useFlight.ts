@@ -19,6 +19,7 @@ export function useFlight(scenario: DemoScenario | null) {
     live.current = true;
     setLoading(true);
     setError('');
+    setRound(null);
     current.current = null;
     const request = scenario ? gameApi.startDemoRound(scenario) : gameApi.getActiveRound();
     request.then((value) => {

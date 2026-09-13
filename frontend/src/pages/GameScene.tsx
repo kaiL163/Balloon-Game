@@ -27,7 +27,8 @@ const crashColor = (value: number) => value < 2 ? 'red' : value < 5 ? 'gold' : v
 const scenarioLabels = { win: 'Быстрый старт x1', crash: 'Быстрый старт x1', booster: 'Быстрый старт x3' };
 const themeLabel = (theme: Theme) => theme === 'RED' ? 'Красный шар' : 'Зелёный шар';
 const betDescriptions = ['Базовый рост', 'Ускоренный', 'Высокие шансы', 'Максимальный'];
-const RESULT_RETURN_SECONDS = 60;
+const INSUFFICIENT_BALANCE = 'Недостаточно бонусов на счёте.';
+const RESULT_RETURN_SECONDS = 10;
 
 function readNavTheme(state: unknown): Theme | null {
   const theme = (state as { theme?: Theme } | null)?.theme;
@@ -52,6 +53,8 @@ export function GameScene() {
   const [portalReady, setPortalReady] = useState(false);
   const [flightPanelCollapsed, setFlightPanelCollapsed] = useState(false);
   const [launchMorphReady, setLaunchMorphReady] = useState(false);
+  const [repeatError, setRepeatError] = useState('');
+  const [repeating, setRepeating] = useState(false);
   const [visit] = useState(() => Math.random());
   const submitting = useRef(false);
   const soundedResult = useRef<string | null>(null);
@@ -84,7 +87,7 @@ export function GameScene() {
     if (navTheme) setTheme(navTheme);
   }, [navTheme]);
   useEffect(() => {
-    if (!isResult) { setResult(null); return; }
+    if (!isResult) { setResult(null); setRepeatError(''); return; }
     gameApi.getResult(resultRoundId).then(setResult).catch((cause) => setError(cause instanceof Error ? cause.message : 'Не удалось загрузить результат.'));
   }, [isResult, resultRoundId]);
   useEffect(() => setPortalReady(true), []);
@@ -102,13 +105,17 @@ export function GameScene() {
   }, [result]);
   useEffect(() => setFlightPanelCollapsed(false), [round?.id]);
 
-  const playAgain = useCallback(() => {
+  const returnToLobby = useCallback(() => {
     navigate('/', { replace: true });
   }, [navigate]);
+  const playAgain = useCallback(() => {
+    const nextTheme = result?.theme ?? theme;
+    navigate('/bet', { replace: true, state: { theme: nextTheme } });
+  }, [navigate, result?.theme, theme]);
   const [seconds, setSeconds] = useState(RESULT_RETURN_SECONDS);
   useEffect(() => {
-    if (!result || !isResult) {
-      setSeconds(RESULT_RETURN_SECONDS);
+    if (!result || !isResult || repeating) {
+      if (!isResult) setSeconds(RESULT_RETURN_SECONDS);
       return;
     }
     const startedAt = Date.now();
@@ -118,11 +125,11 @@ export function GameScene() {
       setSeconds(remaining);
       if (remaining === 0) {
         window.clearInterval(timer);
-        navigate('/', { replace: true });
+        returnToLobby();
       }
     }, 250);
     return () => window.clearInterval(timer);
-  }, [result, isResult, navigate]);
+  }, [result, isResult, repeating, returnToLobby]);
   const selectedBet = data?.bets.find((bet) => bet.id === selectedId);
   const selectedTheme = data?.themes.find((option) => option.id === theme);
   const canStart = !!data && !!selectedBet && selectedBet.amount <= data.profile.balance && !starting && !round;
@@ -171,6 +178,38 @@ export function GameScene() {
       setError(cause instanceof Error ? cause.message : 'Не удалось начать полёт.');
       setStarting(false);
     } finally { submitting.current = false; }
+  }
+
+  async function repeatBet() {
+    if (!result || submitting.current || repeating) return;
+    setRepeatError('');
+    submitting.current = true;
+    setRepeating(true);
+    try {
+      const [profile, bets] = await Promise.all([gameApi.getProfile(), gameApi.getBetOptions()]);
+      const bet = bets.find((option) => option.amount === result.bet);
+      if (!bet) {
+        setRepeatError('Не удалось найти прошлую ставку.');
+        return;
+      }
+      if (bet.amount > profile.balance) {
+        setRepeatError(INSUFFICIENT_BALANCE);
+        return;
+      }
+      prepareGameAudio();
+      playLaunch();
+      await gameApi.startRound(bet.id, result.theme);
+      retry();
+      navigate('/game', { replace: true, state: { theme: result.theme } });
+      setStarting(true);
+      window.setTimeout(() => setStarting(false), 900);
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : 'Не удалось начать полёт.';
+      setRepeatError(/недостаточно/i.test(message) ? INSUFFICIENT_BALANCE : message);
+    } finally {
+      submitting.current = false;
+      setRepeating(false);
+    }
   }
 
   if (!data && !round) {
@@ -442,7 +481,16 @@ export function GameScene() {
     <div className="scene-board">
       <div className="world-stage">
         {mode === 'IN_GAME' && round && <div className="active-world"><FlightSky round={round} /></div>}
-        {mode === 'RESULT' && <ResultState result={result} seconds={seconds} onAgain={playAgain} />}
+        {mode === 'RESULT' && (
+          <ResultState
+            result={result}
+            seconds={seconds}
+            repeating={repeating}
+            repeatError={repeatError}
+            onAgain={playAgain}
+            onRepeat={() => void repeatBet()}
+          />
+        )}
       </div>
 
       {mode === 'IN_GAME' && round && <div className="flight-side"><FlightControls round={round} pending={pending} onCashout={cashout} />{round.scenario && <p className="scenario-banner">Демо · {scenarioLabels[round.scenario]}</p>}{flightError && <div className="game-error">{flightError} <button onClick={retry}>Повторить</button></div>}</div>}
@@ -452,7 +500,21 @@ export function GameScene() {
   </section>;
 }
 
-function ResultState({ result, seconds, onAgain }: { result: GameResult | null; seconds: number; onAgain: () => void }) {
+function ResultState({
+  result,
+  seconds,
+  repeating,
+  repeatError,
+  onAgain,
+  onRepeat,
+}: {
+  result: GameResult | null;
+  seconds: number;
+  repeating: boolean;
+  repeatError: string;
+  onAgain: () => void;
+  onRepeat: () => void;
+}) {
   if (!result) return <div className="result-state result-loading"><h2>Открываем бортовой журнал…</h2></div>;
   const won = result.outcome === 'win';
   return <div className={`result-state ${won ? 'won' : 'lost'}`}>
@@ -460,6 +522,16 @@ function ResultState({ result, seconds, onAgain }: { result: GameResult | null; 
     <h2>{won ? 'Отличный полёт!' : 'Шар лопнул'}</h2>
     <div className="result-prize">{won ? number.format(result.payout) : `−${number.format(result.bet)}`}<small>бонусов</small></div>
     <div className="result-inline-stats"><span>Ставка <b>{number.format(result.bet)}</b></span><span>Cashout <b>{result.cashoutMultiplier?.toFixed(2) ?? '—'}x</b></span><span>Crash <b>{result.crashMultiplier.toFixed(2)}x</b></span><span>Очки <b>+{result.points}</b></span></div>
-    <RewardCard reward={result.reward} /><button className="start-flight play-again" onClick={onAgain}><span>Играть снова</span></button><small className="idle-countdown">Возврат в лобби через {seconds} секунд</small>
+    <RewardCard reward={result.reward} />
+    <div className="result-actions">
+      <button className="start-flight play-again" type="button" disabled={repeating} onClick={onAgain}>
+        <span>Играть снова</span>
+      </button>
+      <button className="start-flight repeat-bet" type="button" disabled={repeating} onClick={onRepeat}>
+        <span>{repeating ? 'Взлетаем…' : 'Повторить ставку'}</span>
+      </button>
+    </div>
+    {repeatError && <p className="result-repeat-error" role="alert">{repeatError}</p>}
+    <small className="idle-countdown">Возврат в лобби через {seconds} секунд</small>
   </div>;
 }
