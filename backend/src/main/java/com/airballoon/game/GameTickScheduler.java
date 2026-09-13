@@ -1,5 +1,6 @@
 package com.airballoon.game;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
  * настроек; короткий системный polling позволяет менять FPS без перезапуска.
  */
 @Component
+@ConditionalOnProperty(name = "app.scheduling.enabled", havingValue = "true", matchIfMissing = true)
 public class GameTickScheduler {
 
     private final GameEngine gameEngine;

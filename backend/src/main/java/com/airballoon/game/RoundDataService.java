@@ -42,6 +42,7 @@ public class RoundDataService {
     private final GameSettingsService settingsService;
     private final RewardProperties rewardProperties;
     private final GameEventPublisher eventPublisher;
+    private final OperationLogService operationLogService;
 
     public RoundDataService(GameRoundRepository gameRoundRepository,
                             UserRepository userRepository,
@@ -51,7 +52,8 @@ public class RoundDataService {
                             GameProperties gameProperties,
                             GameSettingsService settingsService,
                             RewardProperties rewardProperties,
-                            GameEventPublisher eventPublisher) {
+                            GameEventPublisher eventPublisher,
+                            OperationLogService operationLogService) {
         this.gameRoundRepository = gameRoundRepository;
         this.userRepository = userRepository;
         this.rewardRepository = rewardRepository;
@@ -61,6 +63,7 @@ public class RoundDataService {
         this.settingsService = settingsService;
         this.rewardProperties = rewardProperties;
         this.eventPublisher = eventPublisher;
+        this.operationLogService = operationLogService;
     }
 
     /**
@@ -143,6 +146,17 @@ public class RoundDataService {
         round.setStatus(RoundStatus.FLYING);
         gameRoundRepository.save(round);
 
+        operationLogService.record(userId, round.getId(), OperationLogService.ROUND_START, Map.of(
+                "theme", theme.name(),
+                "bet", betKey,
+                "betAmount", betAmount,
+                "boosterMultiplier", boosterMultiplier,
+                "balanceAfter", user.getBonusBalance(),
+                "serverSeedHash", serverSeedHash,
+                "houseEdge", config.houseEdge(),
+                "minCrashMultiplier", config.minCrashMultiplier(),
+                "themeMaxMultiplier", round.getThemeMaxMultiplier()));
+
         return RoundResponse.from(round);
     }
 
@@ -174,6 +188,19 @@ public class RoundDataService {
 
         userRepository.save(user);
         gameRoundRepository.save(round);
+
+        operationLogService.record(userId, roundId, OperationLogService.CASHOUT, Map.of(
+                "multiplier", multiplier,
+                "betAmount", round.getBetAmount(),
+                "win", win,
+                "formula", "win = betAmount * multiplierAtCashout",
+                "balanceAfter", user.getBonusBalance(),
+                "status", round.getStatus().name()));
+        operationLogService.record(userId, roundId, OperationLogService.ACCRUAL, Map.of(
+                "kind", "CASHOUT_POINTS",
+                "pointsAdded", bonus,
+                "pointsTotal", round.getPoints(),
+                "bonusBalanceCredited", win));
 
         eventPublisher.publish(roundId, Map.of(
                 "type", "CASHOUT",
@@ -295,11 +322,24 @@ public class RoundDataService {
         userRepository.findById(round.getUserId()).ifPresent(user -> {
             user.setGamePoints(user.getGamePoints() + round.getPoints());
             userRepository.save(user);
+            operationLogService.record(user.getId(), round.getId(), OperationLogService.ACCRUAL, Map.of(
+                    "kind", "ROUND_POINTS",
+                    "pointsAdded", round.getPoints(),
+                    "gamePointsAfter", user.getGamePoints(),
+                    "winAmount", round.getWinAmount()));
         });
 
         awardReward(round);
 
         gameRoundRepository.save(round);
+
+        operationLogService.record(round.getUserId(), round.getId(), OperationLogService.ROUND_FINISH, Map.of(
+                "status", finalStatus.name(),
+                "crashLevel", round.getCrashLevel(),
+                "crashMultiplier", round.getCrashMultiplier(),
+                "currentLevel", round.getCurrentLevel(),
+                "winAmount", round.getWinAmount(),
+                "points", round.getPoints()));
 
         eventPublisher.publish(round.getId(), Map.of(
                 "type", "CRASH",

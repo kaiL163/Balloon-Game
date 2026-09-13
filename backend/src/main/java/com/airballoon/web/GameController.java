@@ -6,10 +6,12 @@ import com.airballoon.auth.AuthService;
 import com.airballoon.game.GameSettingsService;
 import com.airballoon.exception.ApiException;
 import com.airballoon.game.GameEngine;
+import com.airballoon.game.OperationLogService;
 import com.airballoon.repository.GameRoundRepository;
 import com.airballoon.web.dto.CashoutResponse;
 import com.airballoon.web.dto.FairnessResponse;
 import com.airballoon.web.dto.GameConfigResponse;
+import com.airballoon.web.dto.OperationLogDto;
 import com.airballoon.web.dto.RoundResponse;
 import com.airballoon.web.dto.RoundSummary;
 import com.airballoon.web.dto.StartRoundRequest;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -34,13 +37,16 @@ public class GameController {
     private final GameRoundRepository gameRoundRepository;
     private final AuthService authService;
     private final GameSettingsService settingsService;
+    private final OperationLogService operationLogService;
 
     public GameController(GameEngine gameEngine, GameRoundRepository gameRoundRepository,
-                          AuthService authService, GameSettingsService settingsService) {
+                          AuthService authService, GameSettingsService settingsService,
+                          OperationLogService operationLogService) {
         this.gameEngine = gameEngine;
         this.gameRoundRepository = gameRoundRepository;
         this.authService = authService;
         this.settingsService = settingsService;
+        this.operationLogService = operationLogService;
     }
 
     @GetMapping("/config")
@@ -81,6 +87,26 @@ public class GameController {
         return gameRoundRepository.findAllByUserIdOrderByCreatedAtDesc(uid).stream()
                 .map(RoundSummary::from)
                 .toList();
+    }
+
+    /**
+     * Журнал серверных операций текущего пользователя
+     * (ROUND_START, CASHOUT, ACCRUAL, ROUND_FINISH).
+     */
+    @GetMapping("/operations")
+    public List<OperationLogDto> operations(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @RequestParam(defaultValue = "50") int limit) {
+        return operationLogService.forUser(authService.requireUserId(authorization), limit);
+    }
+
+    /** Журнал операций конкретного раунда (только владелец). */
+    @GetMapping("/rounds/{id}/operations")
+    public List<OperationLogDto> roundOperations(
+            @PathVariable long id,
+            @RequestHeader(value = "Authorization", required = false) String authorization) {
+        requireOwned(id, authService.requireUserId(authorization));
+        return operationLogService.forRound(id);
     }
 
     @GetMapping("/rounds/{id}/fairness")
