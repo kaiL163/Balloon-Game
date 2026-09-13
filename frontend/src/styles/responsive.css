@@ -272,3 +272,85 @@ button,input,select,textarea{max-inline-size:100%}
   .theme-balloon-card:hover,.bet-puzzle:hover,.result-actions button:hover,.admin-save-button:hover{transform:none}
   button,a,input,select{-webkit-tap-highlight-color:transparent}
 }
+
+/* Full-bleed loading screen. The parent layout may be scrollable on small
+   devices, so the loader owns the visual viewport while it is visible. */
+html:has(.scene-loader),
+body:has(.scene-loader),
+#root:has(.scene-loader){
+  width:100%!important;
+  height:100%!important;
+  min-height:100dvh!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:#6eb8e0!important;
+}
+
+.app:has(.scene-loader){
+  width:100%!important;
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+  margin:0!important;
+  overflow:hidden!important;
+  background:#6eb8e0!important;
+}
+
+.app:has(.scene-loader)>header,
+.app:has(.scene-loader)>footer{display:none!important}
+
+.app:has(.scene-loader)>main{
+  position:fixed!important;
+  z-index:100;
+  inset:0!important;
+  width:100vw!important;
+  max-width:none!important;
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:#6eb8e0!important;
+}
+
+.scene-loader{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  max-height:none!important;
+  padding:max(24px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))!important;
+  overflow:hidden!important;
+  background-color:#6eb8e0!important;
+  background-position:center!important;
+  background-size:cover!important;
+  background-repeat:no-repeat!important;
+}
+
+.scene-loader h1{
+  max-width:min(92vw,620px);
+  margin:0;
+  font-size:clamp(26px,6vw,48px);
+  line-height:1.08;
+  overflow-wrap:anywhere;
+  text-wrap:balance;
+}
+
+.scene-loader p{
+  max-width:min(90vw,560px);
+  margin:0;
+  font-size:clamp(12px,2.5vw,16px);
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+
+.scene-loader .loader-balloon{font-size:clamp(48px,12vw,78px)}
+
+@media(orientation:landscape) and (max-height:480px){
+  .scene-loader{gap:6px!important}
+  .scene-loader .loader-balloon{font-size:42px}
+  .scene-loader h1{font-size:clamp(22px,5vw,34px)}
+}
