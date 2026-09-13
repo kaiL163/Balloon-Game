@@ -173,7 +173,19 @@ export function GameScene() {
     } finally { submitting.current = false; }
   }
 
-  if (!data && !round) return <section className="scene-loader" aria-live="polite"><div className="loader-balloon">●</div><h1>Готовим шар к полёту</h1><p>{error || 'Загружаем бонусы и маршрут…'}</p></section>;
+  if (!data && !round) {
+    return (
+      <section
+        className="scene-loader"
+        aria-live="polite"
+        style={{ backgroundImage: `url(${landscapeUrl})` }}
+      >
+        <div className="loader-balloon">●</div>
+        <h1>Готовим шар к полёту</h1>
+        <p>{error || 'Загружаем бонусы и маршрут…'}</p>
+      </section>
+    );
+  }
 
   if ((mode === 'PRE_GAME' || mode === 'IN_GAME') && data) {
     const recentCrashes = data.history.filter((item) => item.crash !== null).slice(0, 8);
