@@ -17,11 +17,13 @@ for (const method of Object.getOwnPropertyNames(MockGameApi.prototype)) {
     Object.defineProperty(gameApi, method, { value: implementation.bind(mock), writable: true, configurable: true });
   }
 }
-gameApi.getHistory = async () => mockHistory;
+gameApi.getHistory = async () => [...mockHistory, ...mockHistory.slice(0, 2)];
 gameApi.getResult = async () => mockHistory[0].result;
 if (screen === '/game') {
-  const round = { ...mockHistory[2].round, status: 'active' as const, baseMultiplier: 2.4, multiplier: 2.4,
-    cashoutMultiplier: null, reachedLevel: 3, boosterLevel: 6, boosterState: 'WAITING' as const };
+  const cashedOut = query.get('variant') === 'cashout';
+  const round = { ...mockHistory[2].round, status: 'active' as const, baseMultiplier: 4.82, multiplier: 4.82,
+    cashoutMultiplier: cashedOut ? 3.2 : null, payout: cashedOut ? 2880 : 0, points: 160,
+    reachedLevel: 7, boosterLevel: 6, boosterState: cashedOut ? 'ACTIVATED' as const : 'WAITING' as const };
   gameApi.getActiveRound = async () => round;
   gameApi.subscribeToRound = () => () => {};
 }

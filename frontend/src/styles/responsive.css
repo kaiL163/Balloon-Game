@@ -360,7 +360,7 @@ html:has(.mode-result),body:has(.mode-result),#root:has(.mode-result){
 .app:has(.bet-select),.app:has(.bet-select)>main,
 .app:has(.mode-result),.app:has(.mode-result)>main,
 .unified-scene.mode-result,.mode-result .scene-board{
-  height:auto!important;min-height:100dvh;max-height:none!important;overflow:visible!important;background-color:#6eb8e0;
+  height:auto!important;min-height:100dvh;max-height:none!important;overflow:visible!important;background-color:transparent!important;
 }
 .bet-select-backdrop,.theme-select-backdrop{width:100vw;height:100dvh;min-height:100dvh;background-color:#6eb8e0!important}
 .bet-select{height:auto!important;min-height:100dvh;max-height:none!important}
@@ -401,7 +401,10 @@ html:has(.mode-result),body:has(.mode-result),#root:has(.mode-result){
 .bet-active-world .level-value{font-size:11px!important;flex-basis:48px}
 
 @media(max-width:900px){
-  .bet-select{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:16px}
+  .bet-select{
+    display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:16px;
+    overflow:visible!important;overscroll-behavior:auto!important;
+  }
   .bet-select.is-lobby .bet-select-panel{order:0}
   .bet-select.is-lobby .bet-select-balloon{order:1;min-height:300px!important}
   .bet-flight-stage.is-flight .bet-select-balloon,
@@ -498,4 +501,29 @@ html:has(dialog[open]),body:has(dialog[open]){overflow:hidden!important}
     display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;overflow:visible;padding-bottom:0;
   }
   .bet-select .bet-crash{min-width:0;width:100%;padding:5px 2px;font-size:9px}
+
+  /* On phones the decorative lobby balloon was forcing the result cards into
+     a clipped 300px stage. Let the cards define their own full height. */
+  .bet-select.is-lobby .bet-select-balloon{
+    display:block!important;height:auto!important;min-height:0!important;margin-top:0!important;padding-top:0!important;
+  }
+  .bet-select.is-lobby .bet-select-balloon>.theme-balloon-float{display:none!important}
+  .bet-select.is-lobby .bet-lobby-stats{
+    position:relative!important;inset:auto!important;display:grid!important;grid-template-columns:1fr!important;
+    width:100%!important;gap:10px!important;
+  }
+  .bet-select.is-lobby .bet-recent,
+  .bet-select.is-lobby .bet-last-game{width:100%;min-height:0}
+  .bet-select.is-lobby .bet-last-game{grid-template-columns:minmax(0,1fr) auto!important}
+
+  /* Cashout is already final. The disabled fixed button only covered the
+     confirmation and booster details on short phone screens. */
+  .bet-flight-stage.is-flight .cashout-action:has(.cashout-button.is-cashed-out){display:none!important}
+  .bet-flight-stage.is-flight .bet-panel-flight-view:has(.cashout-button.is-cashed-out) .cashout-hint{
+    order:6;margin:10px 0 0!important;padding:0!important;
+  }
+  .bet-flight-stage.is-flight .bet-panel-flight-view:has(.cashout-button.is-cashed-out),
+  .bet-flight-stage.is-flight .bet-panel-flight-view:has(.cashout-button.is-cashed-out) .game-controls{
+    height:auto!important;min-height:0!important;
+  }
 }
