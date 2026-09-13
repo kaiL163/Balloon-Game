@@ -1,9 +1,14 @@
 import type { Round } from '../types';
 
 export const FLIGHT_SPEED = 0.2;
+export const FLIGHT_ROUTE_START = 15;
+export const FLIGHT_ROUTE_SPAN = 55;
 export const money = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
 export const levelMultiplier = (level: number, levels: number, maxMultiplier: number) =>
   Math.pow(maxMultiplier, level / levels);
+export const flightProgress = (multiplier: number, maxMultiplier: number) => Math.max(0, Math.min(1,
+  Math.log(Math.max(1, multiplier)) / Math.log(Math.max(1.01, maxMultiplier)),
+));
 
 export function lockCashout(round: Round) {
   const payoutBoost = round.boosterState === 'ACTIVATED' ? round.booster : 1;

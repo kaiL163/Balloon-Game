@@ -72,21 +72,30 @@ JDK 21, Maven 3.9+, Node.js 20+, PostgreSQL 16.
 
 ## Запуск целиком
 
+На сервере должны существовать сертификаты:
+
+```text
+/etc/letsencrypt/live/95.81.82.159/fullchain.pem
+/etc/letsencrypt/live/95.81.82.159/privkey.pem
+```
+
 ```sh
-docker compose up --build
+docker compose up -d --build
 ```
 
 После запуска:
 
 | Сервис | URL |
 | --- | --- |
-| Игра (frontend) | http://localhost:5173 |
-| Backend API | http://localhost:8080 |
-| Health-check | http://localhost:8080/api/health |
-| Swagger UI | http://localhost:8080/swagger-ui.html |
-| OpenAPI JSON | http://localhost:8080/api/docs |
+| Игра (frontend) | https://95.81.82.159 |
+| Backend API | https://95.81.82.159/api |
+| Health-check | https://95.81.82.159/api/health |
+| Swagger UI | https://95.81.82.159/swagger-ui.html |
+| OpenAPI JSON | https://95.81.82.159/api/docs |
 
-Админ-панель: войти как `admin@admin.com` и открыть http://localhost:5173/admin.
+Порт `80` перенаправляет на `443`. Backend не публикует отдельный порт и
+доступен через HTTPS-прокси frontend-контейнера. Админ-панель: войти как
+`admin@admin.com` и открыть https://95.81.82.159/admin.
 
 ## Запуск для разработки
 
