@@ -1,6 +1,9 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { authorizedFetch } from '../utils/auth';
 import { GAME_CONFIG_UPDATED_EVENT } from '../hooks/useGameConfig';
+import landscapeUrl from '../assets/theme-select-landscape.png';
+import '../styles/theme-select.css';
 import '../styles/admin.css';
 
 interface AdminSettings {
@@ -50,8 +53,10 @@ export function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [portalReady, setPortalReady] = useState(false);
 
   useEffect(() => { void load(); }, []);
+  useEffect(() => setPortalReady(true), []);
 
   async function load() {
     setLoading(true); setError('');
@@ -105,66 +110,78 @@ export function AdminPage() {
         }} /></label>);
   }
 
-  return <section className="admin-page">
-    <div className="admin-heading"><p className="eyebrow">Управление игрой</p><h1>Конфигурация версии</h1>
-      <p>Все значения хранятся в PostgreSQL, проверяются сервером и применяются без редактирования файлов.</p></div>
+  const backdrop = (
+    <div
+      className="theme-select-backdrop"
+      aria-hidden="true"
+      style={{ backgroundImage: `url(${landscapeUrl})` }}
+    />
+  );
 
-    <form className="admin-form" onSubmit={save}>
-      <Section title="Базовые настройки" description="Идентификация версии и возможность остановить запуск новых раундов.">
-        <label><span>game_id</span><small>Уникальный код версии, до 50 символов</small><input required maxLength={50} disabled={loading || saving}
-          value={settings.gameId} onChange={(e) => set('gameId', e.target.value)} /></label>
-        <label><span>game_name</span><small>Отображаемое название игры</small><input required maxLength={100} disabled={loading || saving}
-          value={settings.gameName} onChange={(e) => set('gameName', e.target.value)} /></label>
-        <label><span>game_type</span><small>Тип математической модели</small><input value={settings.gameType} disabled /></label>
-        <label className="admin-switch"><span>Игра активна</span><small>При выключении новые раунды недоступны</small>
-          <input type="checkbox" checked={settings.active} disabled={loading || saving} onChange={(e) => set('active', e.target.checked)} /></label>
-      </Section>
+  return <section className="admin-page" aria-label="Настройки администратора">
+    {portalReady ? createPortal(backdrop, document.body) : backdrop}
 
-      <Section title="Математическая модель" description="INVERSE_RTP: вероятность достижения x примерно равна (1 − houseEdge) / x.">
-        <label><span>Распределение crash</span><small>Детерминированная inverse-RTP модель</small><input value={settings.crashDistribution} disabled /></label>
-        {numberField('houseEdge', 'houseEdge (alpha)', 'Преимущество системы: 0–0.25', 0, 0.25, 0.001)}
-        {numberField('minCrashMultiplier', 'Минимальный crash', 'Допустимо 1.00–2.00×', 1, 2, 0.01)}
-        {numberField('greenMaxMultiplier', 'Максимум зелёного', '9-я линия соответствует этому коэффициенту', 1.01, 100, 0.01)}
-        {numberField('redMaxMultiplier', 'Максимум красного', '12-я линия соответствует этому коэффициенту', 1.01, 100, 0.01)}
-        {numberField('multiplierGrowthRate', 'Темп роста', 'Экспоненциальная скорость: 0.03–0.50', 0.03, 0.5, 0.01)}
-        {numberField('fps', 'FPS сервера', 'Частота расчёта и отправки состояния: 1–60', 1, 60, 1)}
-        <label><span>delta</span><small>Вычисляется автоматически: 1 / FPS</small><input value={settings.delta.toFixed(4)} disabled /></label>
-      </Section>
+    <div className="admin-page-inner">
+      <div className="admin-heading"><p className="eyebrow">Управление игрой</p><h1>Конфигурация версии</h1>
+        <p>Все значения хранятся в PostgreSQL, проверяются сервером и применяются без редактирования файлов.</p></div>
 
-      <Section title="Бустер — зелёная тема" description="Вес появления бустера на каждой из 9 линий. Нули запрещают соответствующие позиции.">
-        {probabilityFields('green', 9)}
-      </Section>
+      <form className="admin-form" onSubmit={save}>
+        <Section title="Базовые настройки" description="Идентификация версии и возможность остановить запуск новых раундов.">
+          <label><span>game_id</span><small>Уникальный код версии, до 50 символов</small><input required maxLength={50} disabled={loading || saving}
+            value={settings.gameId} onChange={(e) => set('gameId', e.target.value)} /></label>
+          <label><span>game_name</span><small>Отображаемое название игры</small><input required maxLength={100} disabled={loading || saving}
+            value={settings.gameName} onChange={(e) => set('gameName', e.target.value)} /></label>
+          <label><span>game_type</span><small>Тип математической модели</small><input value={settings.gameType} disabled /></label>
+          <label className="admin-switch"><span>Игра активна</span><small>При выключении новые раунды недоступны</small>
+            <input type="checkbox" checked={settings.active} disabled={loading || saving} onChange={(e) => set('active', e.target.checked)} /></label>
+        </Section>
 
-      <Section title="Бустер — красная тема" description="Вес появления бустера на каждой из 12 линий. Сервер нормализует заданные веса; бустер за точкой crash считается пропущенным.">
-        {probabilityFields('red', 12)}
-      </Section>
+        <Section title="Математическая модель" description="INVERSE_RTP: вероятность достижения x примерно равна (1 − houseEdge) / x.">
+          <label><span>Распределение crash</span><small>Детерминированная inverse-RTP модель</small><input value={settings.crashDistribution} disabled /></label>
+          {numberField('houseEdge', 'houseEdge (alpha)', 'Преимущество системы: 0–0.25', 0, 0.25, 0.001)}
+          {numberField('minCrashMultiplier', 'Минимальный crash', 'Допустимо 1.00–2.00×', 1, 2, 0.01)}
+          {numberField('greenMaxMultiplier', 'Максимум зелёного', '9-я линия соответствует этому коэффициенту', 1.01, 100, 0.01)}
+          {numberField('redMaxMultiplier', 'Максимум красного', '12-я линия соответствует этому коэффициенту', 1.01, 100, 0.01)}
+          {numberField('multiplierGrowthRate', 'Темп роста', 'Экспоненциальная скорость: 0.03–0.50', 0.03, 0.5, 0.01)}
+          {numberField('fps', 'FPS сервера', 'Частота расчёта и отправки состояния: 1–60', 1, 60, 1)}
+          <label><span>delta</span><small>Вычисляется автоматически: 1 / FPS</small><input value={settings.delta.toFixed(4)} disabled /></label>
+        </Section>
 
-      <Section title="Множители бустеров" description="Значения xN для четырёх вариантов ставки, допустимо 1–10×.">
-        {numberField('multiplierTier1Value', 'Tier 1', 'Первая ставка, обычно 1×', 1, 10, 0.01)}
-        {numberField('multiplierTier2Value', 'Tier 2', 'Вторая ставка', 1, 10, 0.01)}
-        {numberField('multiplierTier3Value', 'Tier 3', 'Третья ставка', 1, 10, 0.01)}
-        {numberField('multiplierTier4Value', 'Tier 4', 'Четвёртая ставка', 1, 10, 0.01)}
-      </Section>
+        <Section title="Бустер — зелёная тема" description="Вес появления бустера на каждой из 9 линий. Нули запрещают соответствующие позиции.">
+          {probabilityFields('green', 9)}
+        </Section>
 
-      <Section title="Размеры ставок" description="Сумма, которая списывается с бонусного баланса для каждого tier.">
-        {numberField('betTier1Amount', 'Ставка Tier 1', 'Начальное значение 100 бонусов', 1, 1000000, 0.01)}
-        {numberField('betTier2Amount', 'Ставка Tier 2', 'Начальное значение 200 бонусов', 1, 1000000, 0.01)}
-        {numberField('betTier3Amount', 'Ставка Tier 3', 'Начальное значение 300 бонусов', 1, 1000000, 0.01)}
-        {numberField('betTier4Amount', 'Ставка Tier 4', 'Начальное значение 400 бонусов', 1, 1000000, 0.01)}
-      </Section>
+        <Section title="Бустер — красная тема" description="Вес появления бустера на каждой из 12 линий. Сервер нормализует заданные веса; бустер за точкой crash считается пропущенным.">
+          {probabilityFields('red', 12)}
+        </Section>
 
-      <Section title="Начисление очков" description="Изменения видны в следующем раунде и позволяют экспертам проверить влияние конфигурации.">
-        {numberField('pointsPerLine', 'Очки за линию', 'Начисляются при прохождении уровня', 0, 100000, 1)}
-        {numberField('pointsCashoutBonus', 'Бонус за cashout', 'Разовое начисление при фиксации выигрыша', 0, 100000, 1)}
-        {numberField('pointsXnBonus', 'Бонус xN', 'Умножается на значение активированного бустера', 0, 100000, 1)}
-      </Section>
+        <Section title="Множители бустеров" description="Значения xN для четырёх вариантов ставки, допустимо 1–10×.">
+          {numberField('multiplierTier1Value', 'Tier 1', 'Первая ставка, обычно 1×', 1, 10, 0.01)}
+          {numberField('multiplierTier2Value', 'Tier 2', 'Вторая ставка', 1, 10, 0.01)}
+          {numberField('multiplierTier3Value', 'Tier 3', 'Третья ставка', 1, 10, 0.01)}
+          {numberField('multiplierTier4Value', 'Tier 4', 'Четвёртая ставка', 1, 10, 0.01)}
+        </Section>
 
-      <div className="admin-savebar">
-        <div>{error && <p className="admin-message is-error" role="alert">{error}</p>}
-          {message && <p className="admin-message is-success" role="status">{message}</p>}
-          {settings.updatedAt && <small>Последнее сохранение: {new Date(settings.updatedAt).toLocaleString('ru-RU')}</small>}</div>
-        <button className="button" type="submit" disabled={loading || saving}>{loading ? 'Загрузка…' : saving ? 'Сохраняем…' : 'Сохранить и применить'}</button>
-      </div>
-    </form>
+        <Section title="Размеры ставок" description="Сумма, которая списывается с бонусного баланса для каждого tier.">
+          {numberField('betTier1Amount', 'Ставка Tier 1', 'Начальное значение 100 бонусов', 1, 1000000, 0.01)}
+          {numberField('betTier2Amount', 'Ставка Tier 2', 'Начальное значение 200 бонусов', 1, 1000000, 0.01)}
+          {numberField('betTier3Amount', 'Ставка Tier 3', 'Начальное значение 300 бонусов', 1, 1000000, 0.01)}
+          {numberField('betTier4Amount', 'Ставка Tier 4', 'Начальное значение 400 бонусов', 1, 1000000, 0.01)}
+        </Section>
+
+        <Section title="Начисление очков" description="Изменения видны в следующем раунде и позволяют экспертам проверить влияние конфигурации.">
+          {numberField('pointsPerLine', 'Очки за линию', 'Начисляются при прохождении уровня', 0, 100000, 1)}
+          {numberField('pointsCashoutBonus', 'Бонус за cashout', 'Разовое начисление при фиксации выигрыша', 0, 100000, 1)}
+          {numberField('pointsXnBonus', 'Бонус xN', 'Умножается на значение активированного бустера', 0, 100000, 1)}
+        </Section>
+
+        <div className="admin-savebar">
+          <div>{error && <p className="admin-message is-error" role="alert">{error}</p>}
+            {message && <p className="admin-message is-success" role="status">{message}</p>}
+            {settings.updatedAt && <small>Последнее сохранение: {new Date(settings.updatedAt).toLocaleString('ru-RU')}</small>}</div>
+          <button className="button" type="submit" disabled={loading || saving}>{loading ? 'Загрузка…' : saving ? 'Сохраняем…' : 'Сохранить и применить'}</button>
+        </div>
+      </form>
+    </div>
   </section>;
 }

@@ -11,9 +11,10 @@ export function Layout() {
   const { gameName } = useGameConfig();
   const isThemeSelect = pathname === '/';
   const isAuth = pathname === '/login';
-  const hideChrome = isThemeSelect || isAuth;
+  const isAdminPage = pathname === '/admin';
+  const hideChrome = isThemeSelect || isAuth || isAdminPage;
   useEffect(() => startInterfaceSounds(), []);
-  /* Full-bleed screens (auth / theme / bet / in-game / result) hide chrome via page CSS. */
+  /* Full-bleed screens (auth / theme / admin / bet / in-game / result) hide chrome via page CSS. */
 
   function handleLogout() {
     playWaterDrop();
@@ -27,15 +28,23 @@ export function Layout() {
       Выйти
     </button>
   );
-  const adminOpen = pathname === '/admin';
+  const adminOpen = isAdminPage;
   const adminButton = isAdmin() ? (
     <Link className={`admin-link${adminOpen ? ' is-open' : ''}`} to={adminOpen ? '/' : '/admin'}>
       {adminOpen ? 'Свернуть настройки' : 'Настройки'}
     </Link>
   ) : null;
 
+  const appClass = isAuth
+    ? 'app app-auth'
+    : isThemeSelect
+      ? 'app app-theme-select'
+      : isAdminPage
+        ? 'app app-admin'
+        : 'app';
+
   return (
-    <div className={isAuth ? 'app app-auth' : isThemeSelect ? 'app app-theme-select' : 'app'}>
+    <div className={appClass}>
       {!hideChrome && (
         <header className="header">
           <Link className="brand" to="/"><span className="brand-icon" aria-hidden="true">●</span><strong>{gameName}</strong></Link>
@@ -46,9 +55,9 @@ export function Layout() {
           </div>
         </header>
       )}
-      {isThemeSelect ? <div className="floating-session-actions">{adminButton}{logoutButton}</div> : null}
+      {(isThemeSelect || isAdminPage) ? <div className="floating-session-actions">{adminButton}{logoutButton}</div> : null}
       <main
-        className={isAuth ? 'main-auth' : isThemeSelect ? 'main-theme-select' : undefined}
+        className={isAuth ? 'main-auth' : isThemeSelect ? 'main-theme-select' : isAdminPage ? 'main-admin' : undefined}
         style={hideChrome ? { padding: 0, margin: 0, maxWidth: 'none', width: '100%', height: '100%', background: 'transparent' } : undefined}
       >
         <Outlet />
