@@ -432,7 +432,8 @@ export function GameScene() {
     />
   );
   return <section className={`unified-scene mode-${mode.toLowerCase()} theme-${activeTheme} ${starting ? 'is-launching' : ''} ${round?.status === 'crashed' && !isResult ? 'is-ending' : ''}`}>
-    {(mode === 'IN_GAME' || mode === 'RESULT') && (portalReady ? createPortal(forestBackdrop, document.body) : forestBackdrop)}
+    {mode === 'RESULT' && forestBackdrop}
+    {mode === 'IN_GAME' && (portalReady ? createPortal(forestBackdrop, document.body) : forestBackdrop)}
     {mode === 'RESULT' ? (
       <div className="theme-sky" aria-hidden="true">
         {sky.clouds.map((cloud) => (

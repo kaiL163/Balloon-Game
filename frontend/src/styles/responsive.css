@@ -353,9 +353,12 @@ body:has(.scene-loader),
 }
 
 /* Content must remain reachable at browser zoom and on short desktop windows. */
-html:has(.bet-select),body:has(.bet-select),#root:has(.bet-select),
-html:has(.mode-result),body:has(.mode-result),#root:has(.mode-result){
+html:has(.bet-select),body:has(.bet-select),
+html:has(.mode-result),body:has(.mode-result){
   height:auto!important;min-height:100dvh!important;overflow-y:auto!important;background:#6eb8e0!important;
+}
+#root:has(.bet-select),#root:has(.mode-result){
+  height:auto!important;min-height:100dvh!important;overflow-y:visible!important;background:transparent!important;
 }
 .app:has(.bet-select),.app:has(.bet-select)>main,
 .app:has(.mode-result),.app:has(.mode-result)>main,
