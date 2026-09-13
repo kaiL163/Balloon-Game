@@ -1,247 +1,202 @@
 # Воздушный Шар
 
-Игра в жанре crash: игрок выбирает тему и ставку, шар летит с растущим
-коэффициентом, cashout фиксирует выплату `win = bet × multiplier`.
+Браузерная crash-игра на бонусные баллы. Игрок выбирает тему и ставку, наблюдает за полётом шара и забирает выигрыш до crash. Точка разрушения, коэффициенты, сундуки, выплаты и очки рассчитываются на backend.
+
+## Ссылка на хостинг
+
+**[Открыть игру: https://95.81.82.159](https://95.81.82.159)**
+
+Доступные адреса: [health-check](https://95.81.82.159/api/health), [OpenAPI JSON](https://95.81.82.159/api/docs), [админ-панель](https://95.81.82.159/admin).
+
+## Математическая модель
+
+Подробное описание находится в [math-model.md](math-model.md).
+
+До начала раунда backend создаёт секретный seed и вычисляет crash по SHA-256:
+
+```text
+hash = SHA-256(serverSeed + ":" + roundId)
+u = first52Bits(hash) / 2^52
+crash = floor(100 * clamp((1 - houseEdge) / (1 - u), minCrash, themeMax)) / 100
+```
+
+При стандартном `houseEdge = 0.03` теоретический RTP базовой модели составляет около 97%. Коэффициент во время полёта растёт по экспоненте `baseMultiplier(t) = exp(growthRate * t)`, а уровни распределены логарифмически.
+
+| Тема | Уровни | Максимум базового коэффициента |
+| --- | ---: | ---: |
+| Зелёный шар | 9 | 10x |
+| Красный шар | 12 | 25x |
+
+Предел применяется к базовой кривой и crash. После открытия сундука итоговый коэффициент умножается на booster multiplier и может быть выше предела темы. Выплата: `win = betAmount * multiplierAtCashout`. Результат можно проверить после завершения через `GET /api/game/rounds/{id}/fairness`.
+
+## Игровая логика
+
+1. Пользователь входит, выбирает зелёный или красный шар и одну из четырёх ставок.
+2. При старте сервер проверяет баланс, списывает ставку, заранее определяет crash и линию сундука.
+3. На каждом тике коэффициент растёт. Пройденные линии дают очки, достижение сундука включает бустер.
+4. Cashout до crash фиксирует `bet * currentMultiplier`. Если cashout не сделан, ставка теряется.
+5. На странице результата «Играть снова» открывает выбор ставки, а «Повторить» запускает новую ставку с теми же параметрами.
+
+Cashout и crash обрабатываются атомарно. История, баланс, награды и журнал операций сохраняются в PostgreSQL.
+
+## Архитектура
+
+```text
+Браузер (React) -- HTTPS / WSS --> Nginx
+                                      |-- статический frontend
+                                      |-- /api и /ws -> Spring Boot backend
+                                                               |-- JPA / Flyway
+                                                               '-- PostgreSQL
+```
+
+Frontend общается с backend по REST и WebSocket. Backend является единственным источником игрового результата. Админские настройки сохраняются в `game_settings`, валидируются и применяются без перезапуска.
 
 ## Стек
 
 | Слой | Технологии |
 | --- | --- |
-| Frontend | React 19, TypeScript, Vite |
-| Backend | Java 21, Spring Boot 3.4, Spring Web / WebSocket, Spring Data JPA, Validation |
-| БД | PostgreSQL 16, Flyway-миграции |
-| Документация API | SpringDoc OpenAPI / Swagger UI |
-| Тесты | JUnit 5, Spring MockMvc, H2 (MODE=PostgreSQL) |
-| Запуск | Docker Compose |
+| Frontend | React 19, TypeScript, React Router, Vite 7, CSS |
+| Backend | Java 21, Spring Boot 3.4.4, Spring Web, WebSocket, Spring Data JPA, Validation |
+| Авторизация | Bearer-токены, серверные сессии, Spring Security Crypto |
+| База данных | PostgreSQL 16, Flyway |
+| API | SpringDoc OpenAPI / Swagger UI |
+| Развёртывание | Docker Compose, Nginx, Let's Encrypt |
 
-## Структура проекта
+## Конфигурация
 
-```text
-Balloon-Game/
-├── README.md                 # этот файл
-├── docker-compose.yml        # postgres + backend + frontend
-├── frontend/                 # React-клиент
-│   ├── src/api/              # HTTP/WebSocket клиент к backend
-│   ├── src/components/       # UI игры и админки
-│   └── package.json
-└── backend/
-    ├── docs/math-model.md    # модель расчётов и ограничения настроек
-    ├── pom.xml
-    ├── Dockerfile
-    ├── docker-compose.yml    # только postgres + backend (для разработки)
-    └── src/
-        ├── main/java/com/airballoon/
-        │   ├── auth/         # сессии, демо- и admin-аккаунты
-        │   ├── config/       # свойства, OpenAPI
-        │   ├── domain/       # сущности JPA
-        │   ├── game/         # движок, crash, настройки, журнал операций
-        │   ├── web/          # REST-контроллеры
-        │   └── ws/           # WebSocket тиков полёта
-        ├── main/resources/db/migration/
-        └── test/java/        # проверка серверных операций
-```
+Администратор редактирует настройки на странице `/admin` или через `GET/PUT /api/admin/settings`. После сохранения кэш backend обновляется без перезапуска.
 
-## Зависимости
+| Группа | Параметры | Ограничения |
+| --- | --- | --- |
+| Базовые | `gameId`, `gameName`, `gameType`, `active` | ID до 50, название до 100 символов, тип `CRASH` |
+| Crash | `crashDistribution`, `houseEdge`, `minCrashMultiplier` | `INVERSE_RTP`, edge 0–0.25, минимум 1.00–2.00x |
+| Пределы | `greenMaxMultiplier`, `redMaxMultiplier` | 1.01–100x, не ниже min crash |
+| Динамика | `multiplierGrowthRate`, `fps` | 0.03–0.50, 1–60 FPS |
+| Сундук | 9 GREEN и 12 RED вероятностей | каждое значение 0–1, сумма больше нуля |
+| Бустеры | `multiplierTier1Value` … `multiplierTier4Value` | 1.00–10.00x |
+| Ставки | `betTier1Amount` … `betTier4Amount` | 1–1 000 000 бонусов |
+| Очки | `pointsPerLine`, `pointsCashoutBonus`, `pointsXnBonus` | целые 0–100 000 |
 
-**Backend** (`backend/pom.xml`): `spring-boot-starter-web`, `websocket`, `data-jpa`,
-`validation`, `spring-security-crypto`, `flyway-core`, `postgresql`,
-`springdoc-openapi-starter-webmvc-ui`, `h2` + `spring-boot-starter-test` (tests).
+Публичная конфигурация: `GET /api/game/config`. Переменные окружения: `DB_URL`, `DB_USER`, `DB_PASSWORD`, `ALLOWED_ORIGIN_PATTERNS`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
 
-**Frontend** (`frontend/package.json`): `react`, `react-dom`, `react-router`, Vite.
+## Запуск
 
-**Инфраструктура**: Docker, Docker Compose; для локальной разработки без Docker —
-JDK 21, Maven 3.9+, Node.js 20+, PostgreSQL 16.
+### Docker Compose на сервере
 
-## Демо-пользователи и бонусный баланс
-
-| Роль | Email | Пароль | Стартовый бонусный баланс |
-| --- | --- | --- | ---: |
-| Демо-игрок | `test@test.com` | `test123` | **10 000** |
-| Администратор | `admin@admin.com` | `admin123` | **10 000** |
-
-Как получить бонусный баланс:
-
-1. Войти демо-аккаунтом `test@test.com` / `test123` (уже есть 10 000).
-2. Зарегистрировать нового пользователя через UI или `POST /api/auth/register` —
-   начисляется **1 000** бонусов.
-3. Увеличить баланс игрой: успешный cashout возвращает `bet × multiplier` на
-   `bonusBalance` (см. модель ниже).
-
-Начальный логин админа можно переопределить переменными `ADMIN_EMAIL` и
-`ADMIN_PASSWORD` **до первого запуска** backend.
-
-## Запуск целиком
-
-На сервере должны существовать сертификаты:
+Нужны Docker Compose, порты 80/443 и сертификаты:
 
 ```text
 /etc/letsencrypt/live/95.81.82.159/fullchain.pem
 /etc/letsencrypt/live/95.81.82.159/privkey.pem
 ```
 
+Из корня проекта:
+
 ```sh
 docker compose up -d --build
+docker compose ps
 ```
 
-После запуска:
+Порт 80 перенаправляется на 443. Backend доступен через Nginx-прокси. После изменения frontend: `docker compose up -d --build frontend`.
 
-| Сервис | URL |
-| --- | --- |
-| Игра (frontend) | https://95.81.82.159 |
-| Backend API | https://95.81.82.159/api |
-| Health-check | https://95.81.82.159/api/health |
-| Swagger UI | https://95.81.82.159/swagger-ui.html |
-| OpenAPI JSON | https://95.81.82.159/api/docs |
-
-Порт `80` перенаправляет на `443`. Backend не публикует отдельный порт и
-доступен через HTTPS-прокси frontend-контейнера. Админ-панель: войти как
-`admin@admin.com` и открыть https://95.81.82.159/admin.
-
-## Запуск для разработки
-
-PostgreSQL + backend:
+### Локальная разработка
 
 ```sh
 cd backend
-docker compose up --build
-```
-
-Backend будет на `http://localhost:8080`, PostgreSQL на `localhost:5432`
-(`airballoon` / `postgres` / `postgres`).
-
-Либо без Docker-образа backend (нужен локальный PostgreSQL и JDK 21):
-
-```sh
-cd backend
-mvn spring-boot:run
-```
-
-Frontend:
-
-```sh
-cd frontend
-npm install
+docker compose up -d --build
+cd ../frontend
+npm ci
 npm run dev
 ```
 
-Vite проксирует `/api` и `/ws` на `http://localhost:8080`.
+Frontend работает на `http://localhost:5173`, backend на `http://localhost:8080`. Vite проксирует `/api` и `/ws`. Для запуска backend без Docker нужны JDK 21, Maven 3.9+ и PostgreSQL: `cd backend && mvn spring-boot:run`.
 
-## Модель расчётов
+## Демо-пользователь
 
-Полное описание: [`backend/docs/math-model.md`](backend/docs/math-model.md).
+| Роль | Email | Пароль | Начальный баланс |
+| --- | --- | --- | ---: |
+| Игрок | `test@test.com` | `test123` | 10 000 бонусов |
+| Администратор | `admin@admin.com` | `admin123` | 10 000 бонусов |
 
-Кратко:
+На странице входа можно нажать на карточку аккаунта, чтобы заполнить поля автоматически. Новый пользователь получает 1 000 бонусов при регистрации. Администратор имеет доступ к `/admin`; email и пароль можно задать через `ADMIN_EMAIL` и `ADMIN_PASSWORD` до первого запуска.
 
-1. **Crash point** до старта раунда:
-   `hash = SHA-256(serverSeed + ":" + roundId)`,
-   `u = first52Bits(hash) / 2^52`,
-   `crash = floor(100 × clamp((1 - houseEdge) / (1 - u), min, max)) / 100`.
-   При `houseEdge = 0.03` теоретический RTP ≈ 97%.
-2. **Рост коэффициента** во время полёта: `multiplier(t) = exp(growthRate × t)`.
-3. **Выплата**: `win = betAmount × multiplierAtCashout`.
-4. **Очки**: линии × `points_per_line`, плюс `points_cashout_bonus` при cashout,
-   плюс `points_xn_bonus × boosterMultiplier` при активации бустера.
-5. После завершения раунда seed и crash раскрываются в
-   `GET /api/game/rounds/{id}/fairness`.
+## API / Swagger
 
-## Настройки и ограничения
+Локальный Swagger UI: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html). На хостинге доступен [OpenAPI JSON](https://95.81.82.159/api/docs); интерактивный Swagger используйте локально.
 
-Конфигурация хранится в `game_settings`, редактируется админом (`/admin` или
-`PUT /api/admin/settings`) и применяется **без перезапуска**.
+Для защищённых запросов сначала вызовите `POST /api/auth/login`, затем передавайте `Authorization: Bearer <token>`.
 
-| Группа | Параметры | Допустимые значения |
-| --- | --- | --- |
-| Базовые | `gameId`, `gameName`, `gameType`, `active` | непустые ID/название; тип только `CRASH`; `active=false` блокирует новые раунды |
-| Crash | `crashDistribution`, `houseEdge`, `minCrashMultiplier` | только `INVERSE_RTP`; edge **0–0.25**; min crash **1.00–2.00x** |
-| Лимиты тем | `greenMaxMultiplier`, `redMaxMultiplier` | **1.01–100x**, не ниже min crash |
-| Динамика | `multiplierGrowthRate`, `fps` | рост **0.03–0.50**; FPS **1–60** (`delta = 1/fps`) |
-| Бустер | 9 весов GREEN и 12 RED; `multiplierTier1..4` | веса **0–1** (хотя бы один > 0); tier **1.00–10.00x** |
-| Ставки | `betTier1..4Amount` | **1.00–1 000 000** бонусов |
-| Очки | `pointsPerLine`, `pointsCashoutBonus`, `pointsXnBonus` | целые **0–100 000** |
+| Метод | Назначение |
+| --- | --- |
+| `POST /api/auth/register`, `/api/auth/login`, `/api/auth/logout` | регистрация, вход, выход |
+| `GET /api/users/me`, `/api/users/me/rewards` | профиль, баланс и награды |
+| `GET /api/game/config` | публичные настройки |
+| `POST /api/game/rounds` | старт раунда; тело `{"theme":"GREEN","bet":"x1"}` |
+| `GET /api/game/rounds/{id}`, `/active` | состояние раунда |
+| `POST /api/game/rounds/{id}/cashout` | cashout |
+| `GET /api/game/history` | история пользователя |
+| `GET /api/game/operations` | журнал операций пользователя |
+| `GET /api/game/rounds/{id}/operations` | операции раунда |
+| `GET /api/game/rounds/{id}/fairness` | проверка seed и crash после завершения |
+| `GET/PUT /api/admin/settings` | настройки администратора |
+| `GET /api/admin/operations` | административный журнал |
 
-Публичная часть настроек: `GET /api/game/config`.
+WebSocket: `ws://localhost:8080/ws/game/{roundId}?token=<token>` локально и `wss://95.81.82.159/ws/game/{roundId}?token=<token>` на хостинге. События: `MULTIPLIER_UPDATE`, `LEVEL_REACHED`, `BOOSTER_ACTIVATED`, `CASHOUT`, `CRASH`.
 
-## Независимая проверка серверных операций
+## Как проверить 5 обязательных сценариев
 
-Оцениваемые сценарии можно пройти **без UI** через Swagger, curl или тесты.
+### 1. Старт и списание ставки
 
-### Инструменты
+Войдите игроком, выберите шар и ставку, нажмите «Начать» или вызовите `POST /api/game/rounds`. Убедитесь, что баланс уменьшился на размер ставки, статус стал `FLYING`, а журнал содержит `ROUND_START`.
 
-1. **Swagger UI** — http://localhost:8080/swagger-ui.html  
-   Authorize → `Bearer <token>` после login.
-2. **Журнал операций** — `GET /api/game/operations`, `GET /api/game/rounds/{id}/operations`,
-   для админа `GET /api/admin/operations`.  
-   Типы: `ROUND_START`, `CASHOUT`, `ACCRUAL`, `ROUND_FINISH`, `CONFIG_APPLY`.
-3. **Автотесты** (обязательные сценарии):
+### 2. Cashout и проигрыш после crash
 
-```sh
-cd backend
-mvn test
+Во время полёта нажмите «Забрать выигрыш» или вызовите `POST /api/game/rounds/{id}/cashout`. Проверьте возврат `bet * currentMultiplier`, увеличение баланса и операцию `CASHOUT`. В отдельном раунде дождитесь crash без cashout: ставка не возвращается, поздний cashout отклоняется.
+
+### 3. Очки, сундук и награда
+
+Пройдите несколько линий и завершите раунд. Проверьте очки в результате, `GET /api/users/me`, награды и операции `ACCRUAL`/ `ROUND_FINISH`. Для ставки с бустером выше 1x дождитесь открытия сундука и убедитесь в начислении бонуса xN.
+
+### 4. История и fairness
+
+Откройте историю или вызовите `GET /api/game/history`, найдите завершённый раунд и сравните ставку, crash, cashout и очки. Затем вызовите `GET /api/game/rounds/{id}/fairness`: SHA-256 раскрытого `serverSeed` должен совпасть с `serverSeedHash`. До завершения seed не раскрывается.
+
+### 5. Изменение настроек администратором
+
+Войдите администратором, сохраните исходный `pointsPerLine`, измените его, например на 25, и сохраните полный объект через `PUT /api/admin/settings`. Проверьте новое значение в `GET /api/game/config`, запись `CONFIG_APPLY` в админском журнале и начисление 25 очков за линию в новом раунде. Некорректные значения (например, отрицательные очки или максимум ниже min crash) должны отклоняться. После проверки восстановите исходное значение.
+
+## Структура проекта
+
+```text
+.
+├── README.md
+├── math-model.md
+├── docker-compose.yml
+├── frontend/
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   ├── vite.config.ts
+│   ├── package.json
+│   ├── tests/
+│   └── src/
+│       ├── api/          # HTTP и WebSocket клиент
+│       ├── pages/        # вход, лобби, игра, результат, админка
+│       ├── components/
+│       ├── assets/
+│       └── styles/
+└── backend/
+    ├── Dockerfile
+    ├── docker-compose.yml
+    ├── pom.xml
+    └── src/main/
+        ├── java/com/airballoon/
+        │   ├── auth/
+        │   ├── config/
+        │   ├── domain/
+        │   ├── game/
+        │   ├── web/
+        │   └── ws/
+        └── resources/
+            ├── application.yml
+            └── db/migration/
 ```
-
-Ключевые тесты: `ServerOperationsVerificationTest`, `CrashGeneratorTest`.
-
-4. **Health-check** `GET /api/health` — дополняет проверку, но не заменяет игровые операции.
-
-### Пример: логин → старт → cashout → начисления → история → конфиг
-
-```sh
-# 1) Логин демо-пользователя
-TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d "{\"email\":\"test@test.com\",\"password\":\"test123\"}" | jq -r .token)
-
-# 2) Баланс до ставки
-curl -s http://localhost:8080/api/users/me -H "Authorization: Bearer $TOKEN" | jq
-
-# 3) Публичная конфигурация (ставки и лимиты)
-curl -s http://localhost:8080/api/game/config | jq
-
-# 4) Старт раунда
-ROUND=$(curl -s -X POST http://localhost:8080/api/game/rounds \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "{\"theme\":\"GREEN\",\"bet\":\"x1\"}")
-echo "$ROUND" | jq
-ROUND_ID=$(echo "$ROUND" | jq -r .id)
-
-# 5) Cashout (win = betAmount * currentMultiplier)
-curl -s -X POST "http://localhost:8080/api/game/rounds/$ROUND_ID/cashout" \
-  -H "Authorization: Bearer $TOKEN" | jq
-
-# 6) Начисления и журнал операций раунда
-curl -s "http://localhost:8080/api/game/rounds/$ROUND_ID/operations" \
-  -H "Authorization: Bearer $TOKEN" | jq
-curl -s http://localhost:8080/api/users/me -H "Authorization: Bearer $TOKEN" | jq
-
-# 7) История
-curl -s http://localhost:8080/api/game/history -H "Authorization: Bearer $TOKEN" | jq
-
-# 8) Применение конфигурации (admin)
-ADMIN_TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d "{\"email\":\"admin@admin.com\",\"password\":\"admin123\"}" | jq -r .token)
-
-# Сначала GET /api/admin/settings, измените нужные поля в пределах таблицы выше,
-# затем PUT /api/admin/settings с полным телом. Проверка:
-curl -s http://localhost:8080/api/admin/operations \
-  -H "Authorization: Bearer $ADMIN_TOKEN" | jq '.[] | select(.operation=="CONFIG_APPLY")'
-curl -s http://localhost:8080/api/game/config | jq
-```
-
-После завершения раунда (crash или финализация после cashout) сверьте формулу:
-
-```sh
-curl -s "http://localhost:8080/api/game/rounds/$ROUND_ID/fairness" \
-  -H "Authorization: Bearer $TOKEN" | jq
-```
-
-Ожидание: `SHA-256(serverSeed)` равен `serverSeedHash`, а crash воспроизводится
-формулой из `backend/docs/math-model.md`.
-
-### WebSocket (опционально)
-
-Тики полёта: `ws://localhost:8080/ws/game/{roundId}?token=<token>`.  
-События `MULTIPLIER_UPDATE`, `LEVEL_REACHED`, `CASHOUT`, `CRASH` дублируют
-серверную модель в реальном времени; канонический журнал для проверки —
-`/api/game/.../operations`.
