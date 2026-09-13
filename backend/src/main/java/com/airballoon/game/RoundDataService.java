@@ -232,6 +232,7 @@ public class RoundDataService {
         long tickMs = Math.max(16, Math.round(1000.0 / settingsService.fps()));
         double currentBase = round.getBaseMultiplier().doubleValue();
         double growthRate = Math.max(0.01, settingsService.growthRate());
+        double routeMax = Math.max(1.01, round.getThemeMaxMultiplier().doubleValue());
         double tickFactor = Math.exp(growthRate * tickMs / 1000.0);
         BigDecimal base = BigDecimal.valueOf(currentBase * tickFactor)
                 .setScale(4, RoundingMode.HALF_UP);
@@ -239,17 +240,20 @@ public class RoundDataService {
         if (base.compareTo(round.getCrashMultiplier()) >= 0) {
             round.setBaseMultiplier(round.getCrashMultiplier());
             int previousLevel = round.getCurrentLevel();
-            int reachedLevels = Math.max(0, round.getCrashLevel() - previousLevel);
+            double crashProgress = maxLevel * Math.log(round.getCrashMultiplier().doubleValue()) / Math.log(routeMax);
+            int completedAtCrash = (int) Math.floor(Math.nextDown(crashProgress));
+            int finalLevel = Math.max(previousLevel, Math.max(0, Math.min(maxLevel, completedAtCrash)));
+            int reachedLevels = finalLevel - previousLevel;
             round.setPoints(round.getPoints() + reachedLevels * settingsService.pointsPerLine());
             boolean boosterWasReached = round.getBoosterLevel() != null
-                    && round.getCrashLevel() > round.getBoosterLevel();
+                    && finalLevel >= round.getBoosterLevel();
             boolean boosterReachedNow = boosterWasReached && previousLevel < round.getBoosterLevel();
             if (boosterReachedNow) {
                 int boosterBonus = BigDecimal.valueOf(settingsService.pointsXnBonus())
                         .multiply(round.getBoosterMultiplier()).intValue();
                 round.setPoints(round.getPoints() + boosterBonus);
             }
-            round.setCurrentLevel(round.getCrashLevel());
+            round.setCurrentLevel(finalLevel);
             BigDecimal crashEffective = boosterWasReached
                     ? round.getCrashMultiplier().multiply(round.getBoosterMultiplier()).setScale(2, RoundingMode.HALF_UP)
                     : round.getCrashMultiplier();
@@ -258,7 +262,6 @@ public class RoundDataService {
             return true;
         }
 
-        double routeMax = Math.max(1.01, round.getThemeMaxMultiplier().doubleValue());
         int nextLevel = (int) Math.floor(maxLevel * Math.log(base.doubleValue()) / Math.log(routeMax));
         nextLevel = Math.max(0, Math.min(maxLevel, nextLevel));
         int previousLevel = round.getCurrentLevel();

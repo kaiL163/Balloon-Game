@@ -23,8 +23,9 @@ export function FlightSky({ round }: { round: Round }) {
     previous.current = { level: round.reachedLevel, boosterState: round.boosterState, cashoutMultiplier: round.cashoutMultiplier, status: round.status };
   }, [round.reachedLevel, round.boosterState, round.cashoutMultiplier, round.status]);
   const crashed = round.status === 'crashed';
-  // The server uses the same logarithmic mapping for currentLevel. Positioning
-  // the balloon by its centre keeps the canopy from crossing a line early.
+  // The server uses the same logarithmic mapping for currentLevel. The bottom
+  // of the balloon (its basket) is the checkpoint: a level is completed only
+  // when the whole balloon has crossed the corresponding line.
   const progress = flightProgress(round.baseMultiplier, round.maxMultiplier);
   const altitude = FLIGHT_ROUTE_START + progress * FLIGHT_ROUTE_SPAN;
   return <div className={`game-sky scene-${round.theme.toLowerCase()} ${crashed ? 'sky-crashed' : round.status === 'cashed_out' ? 'sky-fast-forward' : ''}`}>
@@ -33,7 +34,7 @@ export function FlightSky({ round }: { round: Round }) {
     <div className="sky-cloud sky-cloud-one" aria-hidden="true" /><div className="sky-cloud sky-cloud-two" aria-hidden="true" />
     <LevelTrack round={round} />
     {round.status === 'cashed_out' && <div className="flight-speed-lines" aria-hidden="true">{Array.from({ length: 8 }, (_, index) => <i key={index} style={{ left: `${10 + index * 11}%`, animationDelay: `${index * -.09}s` }} />)}</div>}
-    <div className="flying-position" style={{ bottom: `calc(${altitude}% - var(--flight-anchor-offset))` }} aria-hidden="true">
+    <div className="flying-position" style={{ bottom: `${altitude}%` }} aria-hidden="true">
       <div className="flight-balloon air-balloon"><div className="canopy"><div className="canopy-stripe" /></div><div className="ropes" /><div className="basket" /></div>
       {crashed && <div className="crash-burst"><span className="crash-ring" />{Array.from({ length: 12 }, (_, index) => <i key={index} style={{ rotate: `${index * 30}deg` }} />)}</div>}
       {levelFlash && round.reachedLevel > 0 && !crashed && <span key={round.reachedLevel} className="level-points">+10</span>}
