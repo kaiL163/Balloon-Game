@@ -10,5 +10,12 @@
 .bet-chest-note strong { font-size: 13px; color: #ffdf96; }
 .bet-chest-note small { font-size: 11px; line-height: 1.5; color: #e3eff0; margin-top: 3px; }
 .level-booster:has(.booster-chest) { border: 0; padding: 0; background: transparent; box-shadow: none; }
+.level-booster.booster-missed:has(.booster-chest),
+.sky-crashed .level-booster:has(.booster-chest) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-decoration: none;
+}
 .level-booster .booster-chest { transform: scale(.75); transform-origin: right center; }
 @media (prefers-reduced-motion: reduce) { .chest-lid { transition: none; } }
